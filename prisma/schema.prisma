@@ -42,25 +42,29 @@ model Projects {
 }
 
 model Issues {
-  id            String    @id @unique @default(uuid()) @db.Uuid
-  name          String
-  key           String
-  type          String // EIssueType
-  status        String // EIssueStatus
-  priority      String // EIssuePriority
-  assigneeId    String?
-  parrentId     String?
-  assignee      Users?    @relation(fields: [assigneeId], references: [id])
-  sprintId      String?
-  sprint        Sprints?  @relation(fields: [sprintId], references: [id])
-  description   String?   @db.Text()
-  timeRemaining Float?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-  createdBy     Json?
-  updatedBy     Json?
-  deletedBy     Json?
+  id             String     @id @unique @default(uuid()) @db.Uuid
+  name           String
+  key            String
+  type           String // EIssueType
+  status         String // EIssueStatus
+  priority       String // EIssuePriority
+  sprintPosition Int?
+  boardPosition  Int?
+  parrentId      String?
+  assigneeId     String?    @db.Uuid
+  Assignee       Users?     @relation(fields: [assigneeId], references: [id])
+  sprintId       String?    @db.Uuid
+  sprint         Sprints?   @relation(fields: [sprintId], references: [id])
+  description    String?    @db.Text()
+  note           String?    @db.Text()
+  timeRemaining  Float?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  deletedAt      DateTime?
+  createdBy      Json?
+  updatedBy      Json?
+  deletedBy      Json?
+  Comments       Comments[]
 }
 
 model Sprints {
@@ -70,7 +74,7 @@ model Sprints {
   startDate   DateTime  @default(now())
   endDate     DateTime
   status      String // ESprintStatus
-  projectId   String
+  projectId   String    @db.Uuid
   project     Projects  @relation(fields: [projectId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -109,8 +113,8 @@ model Permissions {
 
 model RolePermissions {
   id           String      @id @unique @default(uuid()) @db.Uuid
-  roleId       String
-  permissionId String
+  roleId       String      @db.Uuid
+  permissionId String      @db.Uuid
   role         Roles       @relation(fields: [roleId], references: [id])
   permission   Permissions @relation(fields: [permissionId], references: [id])
   createdAt    DateTime    @default(now())
@@ -119,4 +123,17 @@ model RolePermissions {
   createdBy    Json?
   updatedBy    Json?
   deletedBy    Json?
+}
+
+model Comments {
+  id        String    @id @unique @default(uuid()) @db.Uuid
+  content   String
+  issueId   String    @db.Uuid
+  issue     Issues    @relation(fields: [issueId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy Json?
+  updatedBy Json?
+  deletedBy Json?
 }
