@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id                  String    @id @unique @default(uuid()) @db.Uuid
+  email               String    @unique
+  name                String
+  address             String
+  phoneNumber         String    @unique
+  password            String
+  verifiedToken       String?
+  forgotPasswordToken String?
+  refreshToken        String?
+  status              String // EUserStatus
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+  createdBy           Json?
+  updatedBy           Json?
+  deletedBy           Json?
+  issues              Issues[]
+}
+
+model Projects {
+  id          String    @id @unique @default(uuid()) @db.Uuid
+  name        String
+  description String
+  category    String // EProjectCategory
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdBy   Json?
+  updatedBy   Json?
+  deletedBy   Json?
+  Sprints     Sprints[]
+}
+
+model Issues {
+  id            String    @id @unique @default(uuid()) @db.Uuid
+  name          String
+  key           String
+  type          String // EIssueType
+  status        String // EIssueStatus
+  priority      String // EIssuePriority
+  assigneeId    String?
+  parrentId     String?
+  assignee      Users?    @relation(fields: [assigneeId], references: [id])
+  sprintId      String?
+  sprint        Sprints?  @relation(fields: [sprintId], references: [id])
+  description   String?   @db.Text()
+  timeRemaining Float?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  createdBy     Json?
+  updatedBy     Json?
+  deletedBy     Json?
+}
+
+model Sprints {
+  id          String    @id @unique @default(uuid()) @db.Uuid
+  name        String
+  description String
+  startDate   DateTime  @default(now())
+  endDate     DateTime
+  status      String // ESprintStatus
+  projectId   String
+  project     Projects  @relation(fields: [projectId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdBy   Json?
+  updatedBy   Json?
+  deletedBy   Json?
+  issues      Issues[]
+}
+
+model Roles {
+  id              String            @id @unique @default(uuid()) @db.Uuid
+  name            String
+  description     String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+  createdBy       Json?
+  updatedBy       Json?
+  deletedBy       Json?
+  RolePermissions RolePermissions[]
+}
+
+model Permissions {
+  id              String            @id @unique @default(uuid()) @db.Uuid
+  name            String
+  description     String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+  createdBy       Json?
+  updatedBy       Json?
+  deletedBy       Json?
+  RolePermissions RolePermissions[]
+}
+
+model RolePermissions {
+  id           String      @id @unique @default(uuid()) @db.Uuid
+  roleId       String
+  permissionId String
+  role         Roles       @relation(fields: [roleId], references: [id])
+  permission   Permissions @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  deletedAt    DateTime?
+  createdBy    Json?
+  updatedBy    Json?
+  deletedBy    Json?
+}
