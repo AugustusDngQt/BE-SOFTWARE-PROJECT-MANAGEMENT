@@ -8,29 +8,31 @@ datasource db {
 }
 
 model Users {
-  id                  String    @id @unique @default(uuid()) @db.Uuid
-  email               String    @unique
+  id                  String     @id @unique @default(uuid()) @db.Uuid
+  email               String     @unique
   name                String
   address             String
-  phoneNumber         String    @unique
+  phoneNumber         String     @unique
   password            String
   verifiedToken       String?
   forgotPasswordToken String?
   refreshToken        String?
   status              String // EUserStatus
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
   deletedAt           DateTime?
   createdBy           Json?
   updatedBy           Json?
   deletedBy           Json?
-  issues              Issues[]
+  Sprints             Sprints[]
+  Members             Members[]
+  Comments            Comments[]
 }
 
 model Projects {
   id          String    @id @unique @default(uuid()) @db.Uuid
-  name        String
-  description String
+  name        String    @unique
+  description String?
   category    String // EProjectCategory
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -39,6 +41,7 @@ model Projects {
   updatedBy   Json?
   deletedBy   Json?
   Sprints     Sprints[]
+  Members     Members[]
 }
 
 model Issues {
@@ -50,9 +53,9 @@ model Issues {
   priority       String // EIssuePriority
   sprintPosition Int?
   boardPosition  Int?
-  parrentId      String?
-  assigneeId     String?    @db.Uuid
-  Assignee       Users?     @relation(fields: [assigneeId], references: [id])
+  reporterId     String?    @db.Uuid()
+  assigneeId     String?    @db.Uuid()
+  issueParrentId String?
   sprintId       String?    @db.Uuid
   sprint         Sprints?   @relation(fields: [sprintId], references: [id])
   description    String?    @db.Text()
@@ -76,6 +79,8 @@ model Sprints {
   status      String // ESprintStatus
   projectId   String    @db.Uuid
   project     Projects  @relation(fields: [projectId], references: [id])
+  assigneeId  String?   @db.Uuid
+  Assignee    Users?    @relation(fields: [assigneeId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -83,6 +88,20 @@ model Sprints {
   updatedBy   Json?
   deletedBy   Json?
   issues      Issues[]
+}
+
+model Members {
+  id        String    @id @unique @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  user      Users     @relation(fields: [userId], references: [id])
+  projectId String    @db.Uuid
+  project   Projects  @relation(fields: [projectId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  createdBy Json?
+  updatedBy Json?
+  deletedBy Json?
 }
 
 model Roles {
@@ -130,6 +149,8 @@ model Comments {
   content   String
   issueId   String    @db.Uuid
   issue     Issues    @relation(fields: [issueId], references: [id])
+  userId    String    @db.Uuid
+  User      Users     @relation(fields: [userId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
