@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IResponseCreateUser } from 'src/interfaces/user/create-user.interface';
+import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 
@@ -22,7 +22,7 @@ export class UsersController {
   async create(
     @Body() createUserDto: CreateUserDto,
     @User() userLogin?: IUserLogin,
-  ): Promise<IResponseCreateUser> {
+  ): Promise<IUserResponse> {
     if (userLogin)
       return await this.usersService.create(createUserDto, userLogin);
     return await this.usersService.create(createUserDto);

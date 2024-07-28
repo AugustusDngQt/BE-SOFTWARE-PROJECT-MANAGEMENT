@@ -1,11 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IResponseCreateUser } from 'src/interfaces/user/create-user.interface';
+import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { PrismaService } from 'src/prisma.service';
 import { EUserStatus } from 'src/enum/user.enum';
 import * as bcrypt from 'bcrypt';
@@ -19,8 +15,11 @@ export class UsersService {
   async create(
     createUserDto: CreateUserDto,
     userLogin?: IUserLogin,
-  ): Promise<IResponseCreateUser> {
-    if (await this.findOneByUniqueField(createUserDto.email))
+  ): Promise<IUserResponse> {
+    if (
+      (await this.findOneByUniqueField(createUserDto.email)) ||
+      (await this.findOneByUniqueField(createUserDto.phoneNumber))
+    )
       throw new BadRequestException({
         message: UserMessages.EMAIL_OR_PHONE_NUMBER_ALREADY_EXISTS,
       });
@@ -32,7 +31,7 @@ export class UsersService {
           role: '',
         }
       : null;
-    const user: IResponseCreateUser = await this.prismaService.users.create({
+    const user: IUserResponse = await this.prismaService.users.create({
       data: {
         email: createUserDto.email,
         name: createUserDto.name,
@@ -50,10 +49,10 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  async findOneByUniqueField(value: string) {
+  async findOneByUniqueField(value: string): Promise<IUserResponse> {
     return await this.prismaService.users.findFirst({
       where: {
-        OR: [{ email: value }, { phoneNumber: value }],
+        OR: [{ phoneNumber: value }, { email: value }],
       },
     });
   }
