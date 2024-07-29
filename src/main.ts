@@ -3,12 +3,14 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ErrorsInterceptor } from './interceptors/error-handling.interceptor';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
+  const configService = new ConfigService();
   const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ErrorsInterceptor());
   app.useGlobalGuards(new JwtAuthGuard(new Reflector()));
-  await app.listen(3000);
+  await app.listen(configService.get<string>('PORT'));
 }
 bootstrap();

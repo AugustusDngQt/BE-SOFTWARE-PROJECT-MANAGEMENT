@@ -1,1 +1,4 @@
-export class CreateConversationDto {}
+export class CreateConversationDto {
+  title: string;
+  participantIds: string[];
+}

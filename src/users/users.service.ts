@@ -57,8 +57,11 @@ export class UsersService {
     });
   }
 
-  async findOneById(id: string) {
-    return `This action returns a #${id} user`;
+  async findOneById(id: string): Promise<IUserResponse> {
+    const user: IUserResponse = await this.prismaService.users.findUnique({
+      where: { id },
+    });
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

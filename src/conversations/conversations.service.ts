@@ -7,43 +7,41 @@ import {
   ConversationDocument,
 } from 'mongodb/schemas/Conversation.schema';
 import { Model } from 'mongoose';
+import { IUserLogin } from 'src/interfaces/user/user-login.interface';
+import { IUserResponse } from 'src/interfaces/user/user-response.interface';
+import { UsersService } from 'src/users/users.service';
+import { IParticipant } from 'src/interfaces/message/participant.interface';
 
 @Injectable()
 export class ConversationsService {
   constructor(
     @InjectModel(Conversation.name)
     private conversationModel: Model<ConversationDocument>,
+    private usersService: UsersService,
   ) {}
-  create(createConversationDto: CreateConversationDto) {
+  async create(
+    createConversationDto: CreateConversationDto,
+    userLogin: IUserLogin,
+  ): Promise<Conversation> {
+    const participants: IParticipant[] = await Promise.all(
+      createConversationDto.participantIds.map(async (id: string) => {
+        const user: IUserResponse = await this.usersService.findOneById(id);
+        return { id: user.id, name: user.name, email: user.email };
+      }),
+    );
     const data = {
-      id: 'conv1',
-      title: 'Test Conversation',
-      createdAt: '2024-07-28T12:00:00Z',
-      updatedAt: '2024-07-28T12:00:00Z',
+      title: createConversationDto.title,
+      participants,
       createdBy: {
-        id: 'user1',
-        name: 'John Doe',
+        id: userLogin.id,
+        name: userLogin.name,
+        email: userLogin.email,
+        role: userLogin.role,
       },
-      updatedBy: {
-        id: 'user2',
-        name: 'Jane Doe',
-      },
-      deletedAt: null,
-      deletedBy: null,
-      participants: [
-        {
-          id: 'user1',
-          name: 'John Doe',
-        },
-        {
-          id: 'user2',
-          name: 'Jane Doe',
-        },
-      ],
     };
     const createdConversation = new this.conversationModel(data);
-    createdConversation.save();
-    return 'This action adds a new conversation';
+    const conversation = await createdConversation.save();
+    return conversation;
   }
 
   findAll() {

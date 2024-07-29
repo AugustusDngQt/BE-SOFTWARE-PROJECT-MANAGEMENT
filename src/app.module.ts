@@ -9,6 +9,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MessagesModule } from './messages/messages.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { ConfigModule } from '@nestjs/config';
+import { ProjectsModule } from './projects/projects.module';
+import { MembersModule } from './members/members.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { ConfigModule } from '@nestjs/config';
     MessagesModule,
     ConversationsModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    ProjectsModule,
+    MembersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

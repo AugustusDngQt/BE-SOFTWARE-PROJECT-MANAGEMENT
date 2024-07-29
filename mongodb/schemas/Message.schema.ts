@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, SchemaTypes } from 'mongoose';
 import { IExecutor } from 'src/interfaces/executor.interface';
-
+import { v4 as uuidv4 } from 'uuid';
 export type MessageDocument = HydratedDocument<Message>;
 
 @Schema()
 export class Message {
-  @Prop({ required: true })
+  @Prop({ required: true, default: uuidv4 })
   id: string;
 
   @Prop({ required: true })
