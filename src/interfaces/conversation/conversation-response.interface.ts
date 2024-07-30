@@ -8,4 +8,5 @@ export interface IConversationResponse {
   id: string;
   title: string;
   participants: IConversationParticipant[];
+  projectId: string;
 }

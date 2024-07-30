@@ -39,6 +39,9 @@ export class ConversationsService {
         title: createConversationDto.title,
         participants: participants as unknown as Prisma.JsonArray,
         createdBy: createdBy as unknown as Prisma.JsonObject,
+        projectId: createConversationDto.projectId
+          ? createConversationDto.projectId
+          : null,
       },
     });
 
@@ -47,6 +50,7 @@ export class ConversationsService {
       title: conversation.title,
       participants:
         conversation.participants as unknown as IConversationParticipant[],
+      projectId: conversation.projectId ? conversation.projectId : null,
     };
   }
 
@@ -58,8 +62,52 @@ export class ConversationsService {
     return `This action returns a #${id} conversation`;
   }
 
+  async findOneByProjectId(projectId: string): Promise<IConversationResponse> {
+    const foundConversation =
+      await this.mongoPrismaService.conversations.findUnique({
+        where: { projectId },
+      });
+    return foundConversation
+      ? {
+          id: foundConversation.id,
+          title: foundConversation.title,
+          participants:
+            foundConversation.participants as unknown as IConversationParticipant[],
+          projectId: foundConversation.projectId,
+        }
+      : null;
+  }
+
   update(id: number, updateConversationDto: UpdateConversationDto) {
     return `This action updates a #${id} conversation`;
+  }
+
+  async updateParticipantsByProjectId(
+    projectId: string,
+    participants: IConversationParticipant[],
+    userLogin: IUserLogin,
+  ): Promise<IConversationResponse> {
+    const updatedBy: IExecutor = {
+      id: userLogin.id,
+      name: userLogin.name,
+      email: userLogin.email,
+      role: userLogin.role,
+    };
+    const updatedConversation =
+      await this.mongoPrismaService.conversations.update({
+        where: { projectId },
+        data: {
+          participants: participants as unknown as Prisma.JsonArray,
+          updatedBy,
+        },
+      });
+    return {
+      id: updatedConversation.id,
+      title: updatedConversation.title,
+      participants:
+        updatedConversation.participants as unknown as IConversationParticipant[],
+      projectId: updatedConversation.projectId,
+    };
   }
 
   remove(id: number) {

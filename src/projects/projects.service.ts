@@ -18,7 +18,11 @@ import {
   IUpdateProjectFunctionResponse,
 } from 'src/interfaces/project/update-project.interface';
 import { ETypeUpdateMember } from 'src/enum/project.enum';
-import { IConversationResponse } from 'src/interfaces/conversation/conversation-response.interface';
+import {
+  IConversationParticipant,
+  IConversationResponse,
+} from 'src/interfaces/conversation/conversation-response.interface';
+import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 
 @Injectable()
 export class ProjectsService {
@@ -65,6 +69,7 @@ export class ProjectsService {
         {
           title: createProjectDto.name,
           participantIds: payloadMemberIds,
+          projectId: project.id,
         },
         userLogin,
       );
@@ -122,7 +127,9 @@ export class ProjectsService {
         (memberUpdate: IUpdateMembers) =>
           memberUpdate.type === ETypeUpdateMember.REMOVE,
       );
-
+      const conversations: IConversationResponse =
+        await this.conversationService.findOneByProjectId(updateProjectDto.id);
+      let participants: IConversationParticipant[] = conversations.participants;
       for (const memberRemove of memberRemoves) {
         if (
           memberRemove.type === ETypeUpdateMember.REMOVE &&
@@ -146,13 +153,33 @@ export class ProjectsService {
               userLogin,
             );
           }
+
+          const user: IUserResponse = await this.usersService.findOneById(
+            memberAdd.idUser,
+          );
+          participants.push({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+          });
         }),
         ...memberRemoves.map(async (memberRemove: IUpdateMembers) => {
-          await this.memberService.remove(memberRemove.id, userLogin);
+          const removedMember = await this.memberService.remove(
+            memberRemove.id,
+            userLogin,
+          );
+          participants = participants.filter(
+            (item: IConversationParticipant) =>
+              item.id !== removedMember.userId,
+          );
         }),
       ]);
+      await this.conversationService.updateParticipantsByProjectId(
+        updateProjectDto.id,
+        participants,
+        userLogin,
+      );
     }
-    // update conversation
     const members: IMemberResponse[] =
       await this.memberService.findAllByProjectId(id);
     const project: IProjectResponse =

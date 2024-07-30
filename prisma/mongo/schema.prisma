@@ -28,6 +28,7 @@ model Messages {
 model Conversations {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
   title        String
+  projectId    String?   @unique
   participants Json[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
