@@ -1,0 +1,12 @@
+INSERT INTO public."Members"
+(id, "userId", "projectId", "createdAt", "updatedAt", "deletedAt", "isDeleted", "createdBy", "updatedBy", "deletedBy")
+VALUES('cc4bc350-7c94-4fd4-9612-daa2c127b3d5'::uuid, '381e48de-4c3c-4b9c-9b59-b2224b009a3d'::uuid, '5c0c3fc8-d8cb-486f-a762-19ba49aaf444'::uuid, '2024-07-30 15:36:05.517', '2024-07-30 15:36:05.517', NULL, false, '{"id": "e67829ec-a075-43c6-b666-f2e43156bdf3", "name": "Trần Nguyễn Duy Khánh", "email": "duykhanhtran17062003@gmail.com"}'::jsonb, NULL, NULL);
+INSERT INTO public."Members"
+(id, "userId", "projectId", "createdAt", "updatedAt", "deletedAt", "isDeleted", "createdBy", "updatedBy", "deletedBy")
+VALUES('0d56c97a-4813-4715-a7c4-3b04885d7036'::uuid, '2aaa3a1c-3b85-4ebe-a041-27e12c3f4bb0'::uuid, '5c0c3fc8-d8cb-486f-a762-19ba49aaf444'::uuid, '2024-07-30 15:36:05.517', '2024-07-30 15:48:48.583', '2024-07-30 15:48:48.580', true, '{"id": "e67829ec-a075-43c6-b666-f2e43156bdf3", "name": "Trần Nguyễn Duy Khánh", "email": "duykhanhtran17062003@gmail.com"}'::jsonb, NULL, '{"id": "e67829ec-a075-43c6-b666-f2e43156bdf3", "name": "Trần Nguyễn Duy Khánh", "email": "duykhanhtran17062003@gmail.com"}'::jsonb);
+INSERT INTO public."Members"
+(id, "userId", "projectId", "createdAt", "updatedAt", "deletedAt", "isDeleted", "createdBy", "updatedBy", "deletedBy")
+VALUES('80f50c6d-e5ec-40f9-8ea1-2cd47017c09e'::uuid, 'e67829ec-a075-43c6-b666-f2e43156bdf3'::uuid, '5c0c3fc8-d8cb-486f-a762-19ba49aaf444'::uuid, '2024-07-30 15:36:05.517', '2024-07-30 15:53:34.180', '2024-07-30 15:53:34.178', true, '{"id": "e67829ec-a075-43c6-b666-f2e43156bdf3", "name": "Trần Nguyễn Duy Khánh", "email": "duykhanhtran17062003@gmail.com"}'::jsonb, NULL, '{"id": "e67829ec-a075-43c6-b666-f2e43156bdf3", "name": "Trần Nguyễn Duy Khánh", "email": "duykhanhtran17062003@gmail.com"}'::jsonb);
+INSERT INTO public."Members"
+(id, "userId", "projectId", "createdAt", "updatedAt", "deletedAt", "isDeleted", "createdBy", "updatedBy", "deletedBy")
+VALUES('dabbf888-b62d-4309-a732-8f92966680bf'::uuid, '4e051763-377b-47ef-9ec9-ad8768167a24'::uuid, '5c0c3fc8-d8cb-486f-a762-19ba49aaf444'::uuid, '2024-07-30 15:53:35.948', '2024-07-30 15:53:35.948', NULL, false, '{"id": "e67829ec-a075-43c6-b666-f2e43156bdf3", "name": "Trần Nguyễn Duy Khánh", "email": "duykhanhtran17062003@gmail.com"}'::jsonb, NULL, NULL);

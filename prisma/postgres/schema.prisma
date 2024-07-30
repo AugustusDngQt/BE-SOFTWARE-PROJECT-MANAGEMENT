@@ -25,6 +25,7 @@ model Users {
   createdBy           Json?
   updatedBy           Json?
   deletedBy           Json?
+  isDeleted           Boolean    @default(false)
   Sprints             Sprints[]
   Members             Members[]
   Comments            Comments[]
@@ -41,6 +42,7 @@ model Projects {
   createdBy   Json?
   updatedBy   Json?
   deletedBy   Json?
+  isDeleted   Boolean   @default(false)
   Sprints     Sprints[]
   Members     Members[]
 }
@@ -68,13 +70,14 @@ model Issues {
   createdBy      Json?
   updatedBy      Json?
   deletedBy      Json?
+  isDeleted      Boolean    @default(false)
   Comments       Comments[]
 }
 
 model Sprints {
   id          String    @id @unique @default(uuid()) @db.Uuid
   name        String
-  description String
+  description String?
   startDate   DateTime  @default(now())
   endDate     DateTime
   status      String // ESprintStatus
@@ -89,6 +92,7 @@ model Sprints {
   updatedBy   Json?
   deletedBy   Json?
   issues      Issues[]
+  isDeleted   Boolean   @default(false)
 }
 
 model Members {
@@ -116,6 +120,7 @@ model Roles {
   createdBy       Json?
   updatedBy       Json?
   deletedBy       Json?
+  isDeleted       Boolean           @default(false)
   RolePermissions RolePermissions[]
 }
 
@@ -129,6 +134,7 @@ model Permissions {
   createdBy       Json?
   updatedBy       Json?
   deletedBy       Json?
+  isDeleted       Boolean           @default(false)
   RolePermissions RolePermissions[]
 }
 
@@ -144,6 +150,7 @@ model RolePermissions {
   createdBy    Json?
   updatedBy    Json?
   deletedBy    Json?
+  isDeleted    Boolean     @default(false)
 }
 
 model Comments {

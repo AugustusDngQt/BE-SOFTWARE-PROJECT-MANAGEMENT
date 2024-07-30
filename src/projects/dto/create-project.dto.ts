@@ -5,8 +5,6 @@ import {
   IsOptional,
   IsString,
   IsUUID,
-  MinLength,
-  Validate,
 } from 'class-validator';
 import { EProjectCategory } from 'src/enum/project.enum';
 

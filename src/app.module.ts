@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ProjectsModule } from './projects/projects.module';
 import { MembersModule } from './members/members.module';
 import { DatabaseModule } from './database/database.module';
+import { SprintsModule } from './sprints/sprints.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { DatabaseModule } from './database/database.module';
     ProjectsModule,
     MembersModule,
     DatabaseModule,
+    SprintsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
