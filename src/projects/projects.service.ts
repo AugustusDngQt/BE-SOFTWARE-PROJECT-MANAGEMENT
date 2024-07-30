@@ -5,7 +5,7 @@ import {
   ICreateProjectFunctionResponse,
   IProjectResponse,
 } from 'src/interfaces/project/project-response.interface';
-import { PrismaService } from 'src/prisma.service';
+import { PostgresPrismaService } from 'src/prisma.service';
 import { PROJECT_MESSAGES } from 'src/constants/messages/project.message';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
@@ -13,11 +13,17 @@ import { ConversationsService } from 'src/conversations/conversations.service';
 import { MembersService } from 'src/members/members.service';
 import { UsersService } from 'src/users/users.service';
 import { IMemberResponse } from 'src/interfaces/member/member.interface';
+import {
+  IUpdateMembers,
+  IUpdateProjectFunctionResponse,
+} from 'src/interfaces/project/update-project.interface';
+import { ETypeUpdateMember } from 'src/enum/project.enum';
+import { IConversationResponse } from 'src/interfaces/conversation/conversation-response.interface';
 
 @Injectable()
 export class ProjectsService {
   constructor(
-    private prismaService: PrismaService,
+    private PostgresPrismaService: PostgresPrismaService,
     private conversationService: ConversationsService,
     private memberService: MembersService,
     private usersService: UsersService,
@@ -47,19 +53,21 @@ export class ProjectsService {
       userLogin.id,
       ...createProjectDto.memberIds,
     ];
-    const project: IProjectResponse = await this.prismaService.projects.create({
-      data: {
-        ...payload,
-        createdBy,
-      },
-    });
-    const conversation = await this.conversationService.create(
-      {
-        title: createProjectDto.name,
-        participantIds: payloadMemberIds,
-      },
-      userLogin,
-    );
+    const project: IProjectResponse =
+      await this.PostgresPrismaService.projects.create({
+        data: {
+          ...payload,
+          createdBy,
+        },
+      });
+    const conversation: IConversationResponse =
+      await this.conversationService.create(
+        {
+          title: createProjectDto.name,
+          participantIds: payloadMemberIds,
+        },
+        userLogin,
+      );
     const members: IMemberResponse[] = await Promise.all(
       payloadMemberIds.map(async (id: string) => {
         return await this.memberService.create(
@@ -68,14 +76,12 @@ export class ProjectsService {
         );
       }),
     );
-    // tạo các members
-    // tạo conversations với members
     return { project, members, conversation };
   }
 
   async findAllByCreator(userLogin: IUserLogin): Promise<IProjectResponse[]> {
     const projects: IProjectResponse[] =
-      await this.prismaService.projects.findMany({ where: {} });
+      await this.PostgresPrismaService.projects.findMany({ where: {} });
     return null;
   }
 
@@ -83,17 +89,78 @@ export class ProjectsService {
     return `This action returns a #${id} project`;
   }
 
+  async findOneById(id: string): Promise<IProjectResponse> {
+    return await this.PostgresPrismaService.projects.findUnique({
+      where: { id },
+    });
+  }
+
   async findOneByUniqueField(value: string): Promise<IProjectResponse> {
     const project: IProjectResponse =
-      await this.prismaService.projects.findUnique({
+      await this.PostgresPrismaService.projects.findUnique({
         where: { name: value },
         include: { Sprints: true, Members: true },
       });
     return project;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(
+    updateProjectDto: UpdateProjectDto,
+    userLogin: IUserLogin,
+  ): Promise<IUpdateProjectFunctionResponse> {
+    const { id, memberUpdates, ...payload } = updateProjectDto;
+    if (!(await this.findOneById(id)))
+      throw new BadRequestException({
+        message: PROJECT_MESSAGES.PROJECT_IS_NOT_FOUND,
+      });
+    if (memberUpdates && memberUpdates.length > 0) {
+      const memberAdds: IUpdateMembers[] = memberUpdates.filter(
+        (memberUpdate: IUpdateMembers) =>
+          memberUpdate.type === ETypeUpdateMember.ADD,
+      );
+      const memberRemoves: IUpdateMembers[] = memberUpdates.filter(
+        (memberUpdate: IUpdateMembers) =>
+          memberUpdate.type === ETypeUpdateMember.REMOVE,
+      );
+
+      for (const memberRemove of memberRemoves) {
+        if (
+          memberRemove.type === ETypeUpdateMember.REMOVE &&
+          !(await this.memberService.findOneById(memberRemove.id))
+        )
+          throw new BadRequestException({
+            message: PROJECT_MESSAGES.MEMBER_NOT_FOUND,
+          });
+      }
+      await Promise.all([
+        ...memberAdds.map(async (memberAdd: IUpdateMembers) => {
+          const isMemberExist = await this.memberService.findOneByInformation(
+            memberAdd.idUser,
+            id,
+          );
+          if (isMemberExist) {
+            await this.memberService.restoreById(isMemberExist.id, userLogin);
+          } else {
+            await this.memberService.create(
+              { userId: memberAdd.idUser, projectId: id },
+              userLogin,
+            );
+          }
+        }),
+        ...memberRemoves.map(async (memberRemove: IUpdateMembers) => {
+          await this.memberService.remove(memberRemove.id, userLogin);
+        }),
+      ]);
+    }
+    // update conversation
+    const members: IMemberResponse[] =
+      await this.memberService.findAllByProjectId(id);
+    const project: IProjectResponse =
+      await this.PostgresPrismaService.projects.update({
+        where: { id },
+        data: { ...payload },
+      });
+    return { project, members };
   }
 
   remove(id: number) {

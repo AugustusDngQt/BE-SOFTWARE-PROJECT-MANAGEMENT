@@ -13,11 +13,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
+import { Public } from 'src/decorators/is-public.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   async create(
     @Body() createUserDto: CreateUserDto,

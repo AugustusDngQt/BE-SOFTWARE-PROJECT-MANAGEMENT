@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserResponse } from 'src/interfaces/user/user-response.interface';
-import { PrismaService } from 'src/prisma.service';
+import { PostgresPrismaService } from 'src/prisma.service';
 import { EUserStatus } from 'src/enum/user.enum';
 import * as bcrypt from 'bcrypt';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
@@ -11,7 +11,7 @@ import { UserMessages } from 'src/constants/messages/user.message';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly PostgresPrismaService: PostgresPrismaService) {}
   async create(
     createUserDto: CreateUserDto,
     userLogin?: IUserLogin,
@@ -31,7 +31,7 @@ export class UsersService {
           role: '',
         }
       : null;
-    const user: IUserResponse = await this.prismaService.users.create({
+    const user: IUserResponse = await this.PostgresPrismaService.users.create({
       data: {
         email: createUserDto.email,
         name: createUserDto.name,
@@ -50,7 +50,7 @@ export class UsersService {
   }
 
   async findOneByUniqueField(value: string): Promise<IUserResponse> {
-    return await this.prismaService.users.findFirst({
+    return await this.PostgresPrismaService.users.findFirst({
       where: {
         OR: [{ phoneNumber: value }, { email: value }],
       },
@@ -58,9 +58,10 @@ export class UsersService {
   }
 
   async findOneById(id: string): Promise<IUserResponse> {
-    const user: IUserResponse = await this.prismaService.users.findUnique({
-      where: { id },
-    });
+    const user: IUserResponse =
+      await this.PostgresPrismaService.users.findUnique({
+        where: { id },
+      });
     return user;
   }
 

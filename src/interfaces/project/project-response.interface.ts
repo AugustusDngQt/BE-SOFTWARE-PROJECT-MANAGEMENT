@@ -1,6 +1,6 @@
 import { Members, Sprints } from '@prisma/client';
-import { Conversation } from 'mongodb/schemas/Conversation.schema';
 import { IMemberResponse } from '../member/member.interface';
+import { IConversationResponse } from '../conversation/conversation-response.interface';
 
 export interface IProjectResponse {
   id: string;
@@ -14,5 +14,5 @@ export interface IProjectResponse {
 export interface ICreateProjectFunctionResponse {
   project: IProjectResponse;
   members: IMemberResponse[];
-  conversation: Conversation;
+  conversation: IConversationResponse;
 }

@@ -3,3 +3,8 @@ export enum EProjectCategory {
   MARKETING = 'Marketing',
   BUSINESS = 'Business',
 }
+
+export enum ETypeUpdateMember {
+  ADD = 'Add',
+  REMOVE = 'Remove',
+}

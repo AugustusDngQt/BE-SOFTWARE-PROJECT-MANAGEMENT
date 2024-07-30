@@ -39,6 +39,6 @@ export class MembersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.membersService.remove(+id);
+    // return this.membersService.remove(+id);
   }
 }

@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Message, MessageDocument } from 'mongodb/schemas/Message.schema';
-import { Model } from 'mongoose';
 
 @Injectable()
 export class MessagesService {
-  constructor(
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
-  ) {}
+  constructor() {}
   create(createMessageDto: CreateMessageDto) {
     return 'This action adds a new message';
   }
