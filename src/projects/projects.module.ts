@@ -10,5 +10,6 @@ import { UsersModule } from 'src/users/users.module';
   imports: [ConversationsModule, MembersModule, UsersModule],
   controllers: [ProjectsController],
   providers: [ProjectsService, PostgresPrismaService],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}

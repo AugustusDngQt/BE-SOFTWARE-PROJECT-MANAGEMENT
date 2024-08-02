@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../../node_modules/@prisma/postgres/client"
+  output   = "../../node_modules/@prisma/postgres/client"
 }
 
 datasource db {
@@ -59,12 +59,13 @@ model Issues {
   boardPosition  Int?
   reporterId     String?    @db.Uuid
   assigneeId     String?    @db.Uuid
-  issueParrentId String?
+  issueParrentId String?    @db.Uuid
   sprintId       String?    @db.Uuid
   projectId      String?    @db.Uuid
   note           String?
   description    String?
-  timeRemaining  Float?
+  startDate      DateTime?
+  endDate        DateTime
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   deletedAt      DateTime?
@@ -81,7 +82,7 @@ model Sprints {
   id          String    @id @unique @default(uuid()) @db.Uuid
   name        String
   description String?
-  startDate   DateTime  @default(now())
+  startDate   DateTime?
   endDate     DateTime
   status      String
   projectId   String    @db.Uuid

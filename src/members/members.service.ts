@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IMemberResponse } from 'src/interfaces/member/member.interface';
 import { PostgresPrismaService } from 'src/prisma.service';
 import { IExecutor } from 'src/interfaces/executor.interface';
+import { MEMBER_MESSAGES } from 'src/constants/messages/member.message';
 
 @Injectable()
 export class MembersService {
@@ -71,17 +72,20 @@ export class MembersService {
     return `This action updates a #${id} member`;
   }
 
-  async remove(id: string, userLogin: IUserLogin) {
+  async remove(id: string, userLogin: IUserLogin): Promise<IMemberResponse> {
     const deletedBy: IExecutor = {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
       role: userLogin.role,
     };
-    return await this.PostgresPrismaService.members.update({
+    const deletedMember = await this.PostgresPrismaService.members.update({
       where: { id },
       data: { isDeleted: true, deletedAt: new Date(), deletedBy },
+      include: { user: true },
     });
+
+    return { id: deletedMember.id, userName: deletedMember.user.name };
   }
 
   async findOneByInformation(
@@ -89,7 +93,7 @@ export class MembersService {
     projectId: string,
   ): Promise<IMemberResponse> {
     const find = await this.PostgresPrismaService.members.findFirst({
-      where: { userId: userId, projectId: projectId },
+      where: { userId: userId, projectId: projectId, isDeleted: false },
       include: { user: true },
     });
     return find ? { id: find.id, userName: find.user.name } : null;
@@ -99,6 +103,13 @@ export class MembersService {
     id: string,
     userLogin: IUserLogin,
   ): Promise<IMemberResponse> {
+    const member = await this.PostgresPrismaService.members.findUnique({
+      where: { id, isDeleted: true },
+    });
+    if (!member)
+      throw new BadRequestException(
+        MEMBER_MESSAGES.MEMBER_NOT_FOUND_OR_ALREADY_ACTIVE,
+      );
     const updatedBy: IExecutor = {
       id: userLogin.id,
       name: userLogin.name,
@@ -107,7 +118,7 @@ export class MembersService {
     };
     const restoredMember = await this.PostgresPrismaService.members.update({
       where: { id: id },
-      data: { isDeleted: false, updatedBy },
+      data: { isDeleted: false, deletedAt: null, deletedBy: null, updatedBy },
       include: { user: true },
     });
     return { id: restoredMember.id, userName: restoredMember.user.name };

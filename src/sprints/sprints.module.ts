@@ -7,5 +7,6 @@ import { UsersService } from 'src/users/users.service';
 @Module({
   controllers: [SprintsController],
   providers: [SprintsService, PostgresPrismaService, UsersService],
+  exports: [SprintsService],
 })
 export class SprintsModule {}

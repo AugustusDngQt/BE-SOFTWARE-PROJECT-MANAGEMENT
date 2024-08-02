@@ -26,7 +26,10 @@
     "prisma:mongo:dbpush": "npx prisma db push --schema prisma/mongo/schema.prisma",
     "prisma:generate:postgres_client": "prisma generate --schema prisma/postgres/schema.prisma",
     "prisma:generate:mongo_client": "prisma generate --schema prisma/mongo/schema.prisma",
-    "prisma:generate:db_clients": "prisma generate --schema prisma/postgres/schema.prisma && prisma generate --schema prisma/mongo/schema.prisma"
+    "prisma:generate:db_clients": "prisma generate --schema prisma/postgres/schema.prisma && prisma generate --schema prisma/mongo/schema.prisma",
+    "seed:postgres": "ts-node prisma/postgres/seed.ts",
+    "seed:mongo": "ts-node prisma/mongo/seed.ts",
+    "seed": "npm run seed:postgres && npm run seed:mongo"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -73,7 +76,7 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },

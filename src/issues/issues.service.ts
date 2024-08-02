@@ -11,10 +11,17 @@ import { IIssueResponse } from 'src/interfaces/issue/issue-response.interface';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { FindIssuesByInformationDto } from './dto/find-issues-by-information.dto';
+import { SprintsService } from 'src/sprints/sprints.service';
+import { ProjectsService } from 'src/projects/projects.service';
+import { ISSUES_MESSAGES } from 'src/constants/messages/issue.message';
 
 @Injectable()
 export class IssuesService {
-  constructor(private prisma: PostgresPrismaService) {}
+  constructor(
+    private prisma: PostgresPrismaService,
+    private sprintsService: SprintsService,
+    private projectsService: ProjectsService,
+  ) {}
 
   async create(
     createIssueDto: CreateIssueDto,
@@ -32,16 +39,18 @@ export class IssuesService {
         where: { key: createIssueDto.key },
       })
     )
-      throw new BadRequestException('Issue with this key already exists');
+      throw new BadRequestException(ISSUES_MESSAGES.ISSUE_ALREADY_EXISTS);
     if (
       createIssueDto.issueParrentId &&
       !(await this.findById(createIssueDto.issueParrentId))
     )
-      throw new BadRequestException('Issue parent not found');
+      throw new BadRequestException(ISSUES_MESSAGES.ISSUE_PARENT_NOT_FOUND);
     if (sprintId && projectId)
-      throw new BadRequestException(
-        'Issue cannot be assigned to both sprint and project',
-      );
+      throw new BadRequestException(ISSUES_MESSAGES.ISSUE_INVALID_ASSIGNMENT);
+    else if (sprintId && !(await this.sprintsService.findById(sprintId)))
+      throw new BadRequestException(ISSUES_MESSAGES.SPRINT_NOT_FOUND);
+    else if (projectId && !(await this.projectsService.findOneById(projectId)))
+      throw new BadRequestException(ISSUES_MESSAGES.PROJECT_NOT_FOUND);
 
     return this.prisma.issues.create({
       data: {
@@ -66,9 +75,9 @@ export class IssuesService {
       email: userLogin.email,
       role: userLogin.role,
     };
-    const issue = await this.prisma.issues.findUnique({ where: { id } });
+    const issue = await this.findById(id);
     if (!issue) {
-      throw new NotFoundException('Issue not found or deleted');
+      throw new NotFoundException(ISSUES_MESSAGES.ISSUE_NOT_FOUND_OR_DELETED);
     }
     return this.prisma.issues.update({
       where: { id },
@@ -80,11 +89,11 @@ export class IssuesService {
   }
 
   async restore(id: string): Promise<IIssueResponse> {
-    const issue = await this.prisma.issues.findUnique({
-      where: { id, isDeleted: true },
-    });
+    const issue = await this.findById(id);
     if (!issue)
-      throw new NotFoundException('Issue not found or already active');
+      throw new NotFoundException(
+        ISSUES_MESSAGES.ISSUE_NOT_FOUND_OR_ALREADY_ACTIVE,
+      );
     return this.prisma.issues.update({
       where: { id },
       data: { isDeleted: false, deletedAt: null, deletedBy: null },
@@ -139,7 +148,7 @@ export class IssuesService {
       role: userLogin.role,
     };
     if (!issue) {
-      throw new NotFoundException('Issue not found or deleted');
+      throw new NotFoundException(ISSUES_MESSAGES.ISSUE_NOT_FOUND_OR_DELETED);
     }
     return this.prisma.issues.update({
       where: { id },

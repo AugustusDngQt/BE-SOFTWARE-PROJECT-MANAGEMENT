@@ -1,3 +1,4 @@
+// sprints.service.ts
 import {
   BadRequestException,
   Injectable,
@@ -7,7 +8,7 @@ import { CreateSprintDto } from './dto/create-sprint.dto';
 import { UpdateSprintDto } from './dto/update-sprint.dto';
 import { ISprintResponse } from 'src/interfaces/sprint/sprint-response.interface';
 import { PostgresPrismaService } from 'src/prisma.service';
-import { SPRINT_MESSAGES } from 'src/constants/messages/sprint.message';
+import { SPRINT_MESSAGES } from 'src/constants/messages/sprint.message'; // Import messages
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { ESprintStatus } from 'src/enum/sprint.enum';
@@ -27,9 +28,7 @@ export class SprintsService {
         where: { id: createSprintDto.projectId },
       }))
     )
-      throw new BadRequestException({
-        message: SPRINT_MESSAGES.PROJECT_NOT_FOUND,
-      });
+      throw new BadRequestException(SPRINT_MESSAGES.PROJECT_NOT_FOUND);
 
     const createdBy: IExecutor = {
       id: userLogin.id,
@@ -78,17 +77,13 @@ export class SprintsService {
       where: { id },
     });
     if (!existingSprint) {
-      throw new BadRequestException({
-        message: SPRINT_MESSAGES.SPRINT_NOT_FOUND,
-      });
+      throw new BadRequestException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
     }
     if (
       payload.status &&
       !Object.values(ESprintStatus).includes(payload.status as ESprintStatus)
     ) {
-      throw new BadRequestException({
-        message: SPRINT_MESSAGES.INVALID_STATUS,
-      });
+      throw new BadRequestException(SPRINT_MESSAGES.INVALID_STATUS);
     }
     const updatedSprint = await this.PostgresPrismaService.sprints.update({
       where: { id },
@@ -97,12 +92,13 @@ export class SprintsService {
 
     return updatedSprint;
   }
+
   async restore(id: string): Promise<ISprintResponse> {
     const sprint = await this.PostgresPrismaService.sprints.findUnique({
       where: { id },
     });
     if (!sprint || !sprint.deletedAt) {
-      throw new NotFoundException('Sprint not found or already active');
+      throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
     }
     return await this.PostgresPrismaService.sprints.update({
       where: { id },
@@ -114,9 +110,6 @@ export class SprintsService {
     const sprint = await this.PostgresPrismaService.sprints.findUnique({
       where: { id, isDeleted: false },
     });
-    if (!sprint) {
-      throw new NotFoundException('Sprint not found');
-    }
     return sprint;
   }
 
@@ -145,7 +138,7 @@ export class SprintsService {
       where: { id },
     });
     if (!sprint) {
-      throw new NotFoundException('Sprint not found or deleted');
+      throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
     }
     return this.PostgresPrismaService.sprints.update({
       where: { id },

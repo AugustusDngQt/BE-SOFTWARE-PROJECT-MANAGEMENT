@@ -96,14 +96,14 @@ export class ProjectsService {
 
   async findOneById(id: string): Promise<IProjectResponse> {
     return await this.PostgresPrismaService.projects.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
     });
   }
 
   async findOneByUniqueField(value: string): Promise<IProjectResponse> {
     const project: IProjectResponse =
       await this.PostgresPrismaService.projects.findUnique({
-        where: { name: value },
+        where: { name: value, isDeleted: false },
         include: { Sprints: true, Members: true },
       });
     return project;
@@ -169,8 +169,7 @@ export class ProjectsService {
             userLogin,
           );
           participants = participants.filter(
-            (item: IConversationParticipant) =>
-              item.id !== removedMember.userId,
+            (item: IConversationParticipant) => item.id !== removedMember.id,
           );
         }),
       ]);

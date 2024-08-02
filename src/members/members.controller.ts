@@ -1,44 +1,77 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
   Param,
+  Get,
+  Patch,
   Delete,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
+import { IMemberResponse } from 'src/interfaces/member/member.interface';
+import { User } from 'src/decorators/user.decorator';
 
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
   @Post()
-  create(@Body() createMemberDto: CreateMemberDto, @User() user: IUserLogin) {
-    return this.membersService.create(createMemberDto, user);
+  async create(
+    @Body() createMemberDto: CreateMemberDto,
+    @User() userLogin: IUserLogin,
+  ): Promise<IMemberResponse> {
+    return this.membersService.create(createMemberDto, userLogin);
   }
 
   @Get()
-  findAll() {
+  async findAll(): Promise<string> {
     return this.membersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.membersService.findOne(+id);
+  async findOneById(@Param('id') id: string): Promise<IMemberResponse> {
+    return this.membersService.findOneById(id);
+  }
+
+  @Get('project/:projectId')
+  async findAllByProjectId(
+    @Param('projectId') projectId: string,
+  ): Promise<IMemberResponse[]> {
+    return this.membersService.findAllByProjectId(projectId);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateMemberDto: UpdateMemberDto,
+  ): Promise<string> {
     return this.membersService.update(+id, updateMemberDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    // return this.membersService.remove(+id);
+  async remove(
+    @Param('id') id: string,
+    @User() userLogin: IUserLogin,
+  ): Promise<IMemberResponse> {
+    return this.membersService.remove(id, userLogin);
+  }
+
+  @Get('find')
+  async findOneByInformation(
+    @Param('userId') userId: string,
+    @Param('projectId') projectId: string,
+  ): Promise<IMemberResponse> {
+    return this.membersService.findOneByInformation(userId, projectId);
+  }
+
+  @Post('restore/:id')
+  async restoreById(
+    @Param('id') id: string,
+    @User() userLogin: IUserLogin,
+  ): Promise<IMemberResponse> {
+    return this.membersService.restoreById(id, userLogin);
   }
 }

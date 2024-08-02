@@ -18,10 +18,6 @@ export class CreateSprintDto {
 
   @IsDateString()
   @IsNotEmpty()
-  startDate: string;
-
-  @IsDateString()
-  @IsNotEmpty()
   endDate: string;
 
   @IsString()

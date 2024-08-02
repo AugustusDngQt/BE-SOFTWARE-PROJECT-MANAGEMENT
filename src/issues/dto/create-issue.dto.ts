@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsNumber,
   ValidateIf,
+  IsDateString,
 } from 'class-validator';
 import { EIssueType, EIssueStatus, EIssuePriority } from 'src/enum/issue.enum';
 
@@ -45,7 +46,6 @@ export class CreateIssueDto {
   @IsString()
   note?: string;
 
-  @IsOptional()
-  @IsNumber()
-  timeRemaining?: number;
+  @IsDateString()
+  endDate: string;
 }
