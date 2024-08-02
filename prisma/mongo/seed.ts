@@ -44,12 +44,12 @@ async function seed() {
 
 async function main() {
   try {
-    await clear(); // Ensure `clear` completes before seeding
-    await seed(); // Seed data only after clearing
+    await clear();
+    await seed();
   } catch (error) {
     console.error('Error during seeding:', error);
   } finally {
-    await prisma.$disconnect(); // Ensure Prisma is disconnected in all cases
+    await prisma.$disconnect();
   }
 }
 

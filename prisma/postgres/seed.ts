@@ -16,14 +16,14 @@ function clear() {
     console.log('Collections cleared');
   } catch (error) {
     console.error('Error clearing collections:', error);
-    throw error; // Ensure errors in clear are propagated
+    throw error;
   }
 }
 
-function seed() {
+async function seed() {
   try {
     console.log('Inserting seed data...');
-    prisma.users.createMany({
+    await prisma.users.createMany({
       data: [
         {
           id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
@@ -68,7 +68,7 @@ function seed() {
       ],
     });
 
-    prisma.projects.createMany({
+    await prisma.projects.createMany({
       data: [
         {
           id: '7763850a-d874-414b-a824-436c5d23f786',
@@ -93,18 +93,18 @@ function seed() {
     console.log('Seed data inserted successfully.');
   } catch (error) {
     console.error('Error inserting seed data:', error);
-    throw error; // Ensure errors in seed are propagated
+    throw error;
   }
 }
 
-function main() {
+async function main() {
   try {
-    clear(); // Ensure `clear` completes before seeding
-    seed(); // Seed data only after clearing
+    clear();
+    await seed();
   } catch (error) {
     console.error('Error during seeding:', error);
   } finally {
-    prisma.$disconnect(); // Ensure Prisma is disconnected in all cases
+    prisma.$disconnect();
   }
 }
 
