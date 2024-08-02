@@ -5,7 +5,6 @@ import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IMemberResponse } from 'src/interfaces/member/member.interface';
 import { PostgresPrismaService } from 'src/prisma.service';
 import { IExecutor } from 'src/interfaces/executor.interface';
-import { PrismaClient as MongoPrismaClient } from '@prisma/mongo/client';
 
 @Injectable()
 export class MembersService {

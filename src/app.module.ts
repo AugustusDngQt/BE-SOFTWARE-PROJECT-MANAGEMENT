@@ -12,6 +12,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { MembersModule } from './members/members.module';
 import { DatabaseModule } from './database/database.module';
 import { SprintsModule } from './sprints/sprints.module';
+import { IssuesModule } from './issues/issues.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SprintsModule } from './sprints/sprints.module';
     MembersModule,
     DatabaseModule,
     SprintsModule,
+    IssuesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

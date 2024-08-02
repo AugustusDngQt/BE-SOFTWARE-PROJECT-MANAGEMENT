@@ -4,7 +4,6 @@ import {
   Body,
   Param,
   Get,
-  Query,
   Patch,
   Delete,
 } from '@nestjs/common';
@@ -42,10 +41,10 @@ export class SprintsController {
     return await this.sprintsService.update(updateSprintDto, userLogin);
   }
 
-  // @Post('restore/:id')
-  // async restore(@Param('id') id: string, @User() userLogin: IUserLogin) {
-  //   return await this.sprintsService.restore(id, userLogin);
-  // }
+  @Post('restore/:id')
+  async restore(@Param('id') id: string) {
+    return await this.sprintsService.restore(id);
+  }
 
   @Get(':id')
   async findById(@Param('id') id: string): Promise<ISprintResponse> {
@@ -59,8 +58,8 @@ export class SprintsController {
     return await this.sprintsService.find(query);
   }
 
-  // @Delete(':id')
-  // async remove(@Param('id') id: string, @User() userLogin: IUserLogin) {
-  //   return await this.sprintsService.remove(id, userLogin);
-  // }
+  @Delete(':id')
+  async remove(@Param('id') id: string, @User() userLogin: IUserLogin) {
+    return await this.sprintsService.remove(id, userLogin);
+  }
 }

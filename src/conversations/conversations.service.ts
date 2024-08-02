@@ -38,7 +38,7 @@ export class ConversationsService {
       data: {
         title: createConversationDto.title,
         participants: participants as unknown as Prisma.JsonArray,
-        createdBy: createdBy as unknown as Prisma.JsonObject,
+        createdBy: createdBy,
         projectId: createConversationDto.projectId
           ? createConversationDto.projectId
           : null,

@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../../node_modules/@prisma/postgres/client"
+  // output   = "../../node_modules/@prisma/postgres/client"
 }
 
 datasource db {
@@ -18,7 +18,7 @@ model Users {
   verifiedToken       String?
   forgotPasswordToken String?
   refreshToken        String?
-  status              String // EUserStatus
+  status              String
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
   deletedAt           DateTime?
@@ -26,16 +26,16 @@ model Users {
   updatedBy           Json?
   deletedBy           Json?
   isDeleted           Boolean    @default(false)
-  Sprints             Sprints[]
-  Members             Members[]
   Comments            Comments[]
+  Members             Members[]
+  Sprints             Sprints[]
 }
 
 model Projects {
   id          String    @id @unique @default(uuid()) @db.Uuid
   name        String    @unique
   description String?
-  category    String // EProjectCategory
+  category    String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -43,26 +43,27 @@ model Projects {
   updatedBy   Json?
   deletedBy   Json?
   isDeleted   Boolean   @default(false)
-  Sprints     Sprints[]
+  Issues      Issues[]
   Members     Members[]
+  Sprints     Sprints[]
 }
 
 model Issues {
   id             String     @id @unique @default(uuid()) @db.Uuid
   name           String
-  key            String
-  type           String // EIssueType
-  status         String // EIssueStatus
-  priority       String // EIssuePriority
+  key            String     @unique
+  type           String
+  status         String
+  priority       String
   sprintPosition Int?
   boardPosition  Int?
-  reporterId     String?    @db.Uuid()
-  assigneeId     String?    @db.Uuid()
+  reporterId     String?    @db.Uuid
+  assigneeId     String?    @db.Uuid
   issueParrentId String?
   sprintId       String?    @db.Uuid
-  sprint         Sprints?   @relation(fields: [sprintId], references: [id])
-  description    String?    @db.Text()
-  note           String?    @db.Text()
+  projectId      String?    @db.Uuid
+  note           String?
+  description    String?
   timeRemaining  Float?
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
@@ -72,6 +73,8 @@ model Issues {
   deletedBy      Json?
   isDeleted      Boolean    @default(false)
   Comments       Comments[]
+  Project        Projects?  @relation(fields: [projectId], references: [id])
+  Sprint         Sprints?   @relation(fields: [sprintId], references: [id])
 }
 
 model Sprints {
@@ -80,27 +83,25 @@ model Sprints {
   description String?
   startDate   DateTime  @default(now())
   endDate     DateTime
-  status      String // ESprintStatus
+  status      String
   projectId   String    @db.Uuid
-  project     Projects  @relation(fields: [projectId], references: [id])
   assigneeId  String?   @db.Uuid
-  Assignee    Users?    @relation(fields: [assigneeId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
   createdBy   Json?
   updatedBy   Json?
   deletedBy   Json?
-  issues      Issues[]
   isDeleted   Boolean   @default(false)
+  issues      Issues[]
+  Assignee    Users?    @relation(fields: [assigneeId], references: [id])
+  project     Projects  @relation(fields: [projectId], references: [id])
 }
 
 model Members {
   id        String    @id @unique @default(uuid()) @db.Uuid
   userId    String    @db.Uuid
-  user      Users     @relation(fields: [userId], references: [id])
   projectId String    @db.Uuid
-  project   Projects  @relation(fields: [projectId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -108,6 +109,8 @@ model Members {
   createdBy Json?
   updatedBy Json?
   deletedBy Json?
+  project   Projects  @relation(fields: [projectId], references: [id])
+  user      Users     @relation(fields: [userId], references: [id])
 }
 
 model Roles {
@@ -142,8 +145,6 @@ model RolePermissions {
   id           String      @id @unique @default(uuid()) @db.Uuid
   roleId       String      @db.Uuid
   permissionId String      @db.Uuid
-  role         Roles       @relation(fields: [roleId], references: [id])
-  permission   Permissions @relation(fields: [permissionId], references: [id])
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   deletedAt    DateTime?
@@ -151,15 +152,15 @@ model RolePermissions {
   updatedBy    Json?
   deletedBy    Json?
   isDeleted    Boolean     @default(false)
+  permission   Permissions @relation(fields: [permissionId], references: [id])
+  role         Roles       @relation(fields: [roleId], references: [id])
 }
 
 model Comments {
   id        String    @id @unique @default(uuid()) @db.Uuid
   content   String
   issueId   String    @db.Uuid
-  issue     Issues    @relation(fields: [issueId], references: [id])
   userId    String    @db.Uuid
-  User      Users     @relation(fields: [userId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -167,4 +168,6 @@ model Comments {
   createdBy Json?
   updatedBy Json?
   deletedBy Json?
+  issue     Issues    @relation(fields: [issueId], references: [id])
+  User      Users     @relation(fields: [userId], references: [id])
 }

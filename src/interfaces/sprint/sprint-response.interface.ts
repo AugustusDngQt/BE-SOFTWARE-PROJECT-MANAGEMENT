@@ -1,4 +1,4 @@
-import { Issues, Projects, Users } from '@prisma/client';
+import type { Sprints, Users } from '@prisma/client';
 
 export interface ISprintResponse {
   id: string;
@@ -10,5 +10,5 @@ export interface ISprintResponse {
   projectId: string;
   assigneeId?: string;
   Assignee?: Users;
-  issues?: Issues[];
+  issues?: Sprints[];
 }

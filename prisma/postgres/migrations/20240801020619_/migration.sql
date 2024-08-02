@@ -16,6 +16,7 @@ CREATE TABLE "Users" (
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -32,6 +33,7 @@ CREATE TABLE "Projects" (
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Projects_pkey" PRIMARY KEY ("id")
 );
@@ -50,6 +52,7 @@ CREATE TABLE "Issues" (
     "assigneeId" UUID,
     "issueParrentId" TEXT,
     "sprintId" UUID,
+    "projectId" UUID,
     "description" TEXT,
     "note" TEXT,
     "timeRemaining" DOUBLE PRECISION,
@@ -59,6 +62,7 @@ CREATE TABLE "Issues" (
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Issues_pkey" PRIMARY KEY ("id")
 );
@@ -67,7 +71,7 @@ CREATE TABLE "Issues" (
 CREATE TABLE "Sprints" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endDate" TIMESTAMP(3) NOT NULL,
     "status" TEXT NOT NULL,
@@ -79,6 +83,7 @@ CREATE TABLE "Sprints" (
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Sprints_pkey" PRIMARY KEY ("id")
 );
@@ -110,6 +115,7 @@ CREATE TABLE "Roles" (
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Roles_pkey" PRIMARY KEY ("id")
 );
@@ -125,6 +131,7 @@ CREATE TABLE "Permissions" (
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Permissions_pkey" PRIMARY KEY ("id")
 );
@@ -140,6 +147,7 @@ CREATE TABLE "RolePermissions" (
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "RolePermissions_pkey" PRIMARY KEY ("id")
 );
@@ -180,6 +188,9 @@ CREATE UNIQUE INDEX "Projects_name_key" ON "Projects"("name");
 CREATE UNIQUE INDEX "Issues_id_key" ON "Issues"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Issues_key_key" ON "Issues"("key");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Sprints_id_key" ON "Sprints"("id");
 
 -- CreateIndex
@@ -198,25 +209,28 @@ CREATE UNIQUE INDEX "RolePermissions_id_key" ON "RolePermissions"("id");
 CREATE UNIQUE INDEX "Comments_id_key" ON "Comments"("id");
 
 -- AddForeignKey
-ALTER TABLE "Issues" ADD CONSTRAINT "Issues_sprintId_fkey" FOREIGN KEY ("sprintId") REFERENCES "Sprints"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Issues" ADD CONSTRAINT "Issues_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Projects"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Sprints" ADD CONSTRAINT "Sprints_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Issues" ADD CONSTRAINT "Issues_sprintId_fkey" FOREIGN KEY ("sprintId") REFERENCES "Sprints"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Sprints" ADD CONSTRAINT "Sprints_assigneeId_fkey" FOREIGN KEY ("assigneeId") REFERENCES "Users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Members" ADD CONSTRAINT "Members_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Sprints" ADD CONSTRAINT "Sprints_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Members" ADD CONSTRAINT "Members_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RolePermissions" ADD CONSTRAINT "RolePermissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Members" ADD CONSTRAINT "Members_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RolePermissions" ADD CONSTRAINT "RolePermissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "Permissions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RolePermissions" ADD CONSTRAINT "RolePermissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comments" ADD CONSTRAINT "Comments_issueId_fkey" FOREIGN KEY ("issueId") REFERENCES "Issues"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
