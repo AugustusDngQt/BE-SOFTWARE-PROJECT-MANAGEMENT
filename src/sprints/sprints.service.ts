@@ -12,7 +12,6 @@ import { SPRINT_MESSAGES } from 'src/constants/messages/sprint.message'; // Impo
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { ESprintStatus } from 'src/enum/sprint.enum';
-import type { Sprints } from '@prisma/client';
 import { FindSprintByProjectIdStatusDto } from './dto/find-sprints-by-projectid-&-status.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 import { PROJECT_MESSAGES } from 'src/constants/messages/project.message';

@@ -13,6 +13,8 @@ import { MembersModule } from './members/members.module';
 import { DatabaseModule } from './database/database.module';
 import { SprintsModule } from './sprints/sprints.module';
 import { IssuesModule } from './issues/issues.module';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { IssuesModule } from './issues/issues.module';
     DatabaseModule,
     SprintsModule,
     IssuesModule,
+    RolesModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

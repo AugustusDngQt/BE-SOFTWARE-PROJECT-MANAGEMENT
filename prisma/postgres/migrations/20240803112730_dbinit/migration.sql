@@ -44,7 +44,7 @@ CREATE TABLE "Issues" (
     "name" TEXT NOT NULL,
     "key" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'To do',
     "priority" TEXT NOT NULL,
     "sprintPosition" INTEGER,
     "boardPosition" INTEGER,
@@ -98,6 +98,8 @@ CREATE TABLE "Members" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "roleId" UUID,
+    "status" TEXT NOT NULL DEFAULT 'Pending',
     "createdBy" JSONB,
     "updatedBy" JSONB,
     "deletedBy" JSONB,
@@ -109,7 +111,8 @@ CREATE TABLE "Members" (
 CREATE TABLE "Roles" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -117,6 +120,7 @@ CREATE TABLE "Roles" (
     "updatedBy" JSONB,
     "deletedBy" JSONB,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "permissionIds" TEXT[],
 
     CONSTRAINT "Roles_pkey" PRIMARY KEY ("id")
 );
@@ -125,7 +129,10 @@ CREATE TABLE "Roles" (
 CREATE TABLE "Permissions" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "path" TEXT NOT NULL,
+    "module" TEXT NOT NULL,
+    "method" TEXT NOT NULL,
+    "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -135,22 +142,6 @@ CREATE TABLE "Permissions" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Permissions_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "RolePermissions" (
-    "id" UUID NOT NULL,
-    "roleId" UUID NOT NULL,
-    "permissionId" UUID NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-    "createdBy" JSONB,
-    "updatedBy" JSONB,
-    "deletedBy" JSONB,
-    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "RolePermissions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -204,9 +195,6 @@ CREATE UNIQUE INDEX "Roles_id_key" ON "Roles"("id");
 CREATE UNIQUE INDEX "Permissions_id_key" ON "Permissions"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RolePermissions_id_key" ON "RolePermissions"("id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Comments_id_key" ON "Comments"("id");
 
 -- AddForeignKey
@@ -222,16 +210,13 @@ ALTER TABLE "Sprints" ADD CONSTRAINT "Sprints_assigneeId_fkey" FOREIGN KEY ("ass
 ALTER TABLE "Sprints" ADD CONSTRAINT "Sprints_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Members" ADD CONSTRAINT "Members_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Members" ADD CONSTRAINT "Members_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Members" ADD CONSTRAINT "Members_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "RolePermissions" ADD CONSTRAINT "RolePermissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "Permissions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "RolePermissions" ADD CONSTRAINT "RolePermissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comments" ADD CONSTRAINT "Comments_issueId_fkey" FOREIGN KEY ("issueId") REFERENCES "Issues"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

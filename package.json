@@ -27,9 +27,7 @@
     "prisma:generate:postgres_client": "prisma generate --schema prisma/postgres/schema.prisma",
     "prisma:generate:mongo_client": "prisma generate --schema prisma/mongo/schema.prisma",
     "prisma:generate:db_clients": "prisma generate --schema prisma/postgres/schema.prisma && prisma generate --schema prisma/mongo/schema.prisma",
-    "seed:postgres": "ts-node prisma/postgres/seed.ts",
-    "seed:mongo": "ts-node prisma/mongo/seed.ts",
-    "seed": "npm run seed:postgres && npm run seed:mongo"
+    "seed": "yarn postgres:migrate:dev dbinit && yarn prisma:mongo:dbpush && ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

@@ -23,16 +23,16 @@ export class MembersService {
 
     const createdMember = await this.PostgresPrismaService.members.create({
       data: {
-        user: { connect: { id: createMemberDto.userId } },
-        project: { connect: { id: createMemberDto.projectId } },
+        User: { connect: { id: createMemberDto.userId } },
+        Project: { connect: { id: createMemberDto.projectId } },
         createdBy,
       },
-      include: { user: true, project: true },
+      include: { User: true, Project: true },
     });
 
     const member: IMemberResponse = {
       id: createdMember.id,
-      userName: createdMember.user.name,
+      userName: createdMember.User.name,
     };
     return member;
   }
@@ -48,21 +48,21 @@ export class MembersService {
   async findOneById(id: string): Promise<IMemberResponse> {
     const member = await this.PostgresPrismaService.members.findUnique({
       where: { id, isDeleted: false },
-      include: { user: true },
+      include: { User: true },
     });
-    return { id: member.id, userName: member.user.name };
+    return { id: member.id, userName: member.User.name };
   }
 
   async findAllByProjectId(projectId: string): Promise<IMemberResponse[]> {
     const foundMembers = await this.PostgresPrismaService.members.findMany({
       where: { projectId, isDeleted: false },
-      include: { user: true },
+      include: { User: true },
     });
 
     const members: IMemberResponse[] = foundMembers.map((member) => {
       return {
         id: member.id,
-        userName: member.user.name,
+        userName: member.User.name,
       };
     });
     return members;
@@ -98,10 +98,10 @@ export class MembersService {
     const deletedMember = await this.PostgresPrismaService.members.update({
       where: { id },
       data: { isDeleted: true, deletedAt: new Date(), deletedBy },
-      include: { user: true },
+      include: { User: true },
     });
 
-    return { id: deletedMember.id, userName: deletedMember.user.name };
+    return { id: deletedMember.id, userName: deletedMember.User.name };
   }
 
   async findOneByInformation(
@@ -110,9 +110,9 @@ export class MembersService {
   ): Promise<IMemberResponse> {
     const find = await this.PostgresPrismaService.members.findFirst({
       where: { userId: userId, projectId: projectId, isDeleted: false },
-      include: { user: true },
+      include: { User: true },
     });
-    return find ? { id: find.id, userName: find.user.name } : null;
+    return find ? { id: find.id, userName: find.User.name } : null;
   }
 
   async restoreById(
@@ -134,8 +134,8 @@ export class MembersService {
     const restoredMember = await this.PostgresPrismaService.members.update({
       where: { id: id },
       data: { isDeleted: false, deletedAt: null, deletedBy: null, updatedBy },
-      include: { user: true },
+      include: { User: true },
     });
-    return { id: restoredMember.id, userName: restoredMember.user.name };
+    return { id: restoredMember.id, userName: restoredMember.User.name };
   }
 }

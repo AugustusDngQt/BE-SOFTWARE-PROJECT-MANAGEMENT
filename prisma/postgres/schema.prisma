@@ -53,7 +53,7 @@ model Issues {
   name           String
   key            String     @unique
   type           String
-  status         String
+  status         String     @default("To do")
   priority       String
   sprintPosition Int?
   boardPosition  Int?
@@ -94,9 +94,9 @@ model Sprints {
   updatedBy   Json?
   deletedBy   Json?
   isDeleted   Boolean   @default(false)
-  issues      Issues[]
+  Issues      Issues[]
   Assignee    Users?    @relation(fields: [assigneeId], references: [id])
-  project     Projects  @relation(fields: [projectId], references: [id])
+  Project     Projects  @relation(fields: [projectId], references: [id])
 }
 
 model Members {
@@ -113,52 +113,40 @@ model Members {
   createdBy Json?
   updatedBy Json?
   deletedBy Json?
-  project   Projects  @relation(fields: [projectId], references: [id])
-  user      Users     @relation(fields: [userId], references: [id])
+  Project   Projects  @relation(fields: [projectId], references: [id])
+  User      Users     @relation(fields: [userId], references: [id])
 }
 
 model Roles {
-  id              String            @id @unique @default(uuid()) @db.Uuid
-  name            String
-  description     String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  deletedAt       DateTime?
-  createdBy       Json?
-  updatedBy       Json?
-  deletedBy       Json?
-  isDeleted       Boolean           @default(false)
-  RolePermissions RolePermissions[]
-  Members         Members[]
+  id            String    @id @unique @default(uuid()) @db.Uuid
+  name          String
+  description   String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  createdBy     Json?
+  updatedBy     Json?
+  deletedBy     Json?
+  isDeleted     Boolean   @default(false)
+  Members       Members[]
+  permissionIds String[]
 }
 
 model Permissions {
-  id              String            @id @unique @default(uuid()) @db.Uuid
-  name            String
-  description     String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  deletedAt       DateTime?
-  createdBy       Json?
-  updatedBy       Json?
-  deletedBy       Json?
-  isDeleted       Boolean           @default(false)
-  RolePermissions RolePermissions[]
-}
-
-model RolePermissions {
-  id           String      @id @unique @default(uuid()) @db.Uuid
-  roleId       String      @db.Uuid
-  permissionId String      @db.Uuid
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  deletedAt    DateTime?
-  createdBy    Json?
-  updatedBy    Json?
-  deletedBy    Json?
-  isDeleted    Boolean     @default(false)
-  permission   Permissions @relation(fields: [permissionId], references: [id])
-  role         Roles       @relation(fields: [roleId], references: [id])
+  id          String    @id @unique @default(uuid()) @db.Uuid
+  name        String
+  path        String
+  module      String // EPermissionModules
+  method      String // EPermissionMethods
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdBy   Json?
+  updatedBy   Json?
+  deletedBy   Json?
+  isDeleted   Boolean   @default(false)
 }
 
 model Comments {
@@ -173,6 +161,6 @@ model Comments {
   createdBy Json?
   updatedBy Json?
   deletedBy Json?
-  issue     Issues    @relation(fields: [issueId], references: [id])
+  Issue     Issues    @relation(fields: [issueId], references: [id])
   User      Users     @relation(fields: [userId], references: [id])
 }

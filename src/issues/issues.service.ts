@@ -51,6 +51,18 @@ export class IssuesService {
     else if (projectId && !(await this.projectsService.findOneById(projectId)))
       throw new BadRequestException(ISSUES_MESSAGES.PROJECT_NOT_FOUND);
 
+    const maxPositions = await this.prisma.issues.aggregate({
+      _max: {
+        sprintPosition: true,
+        boardPosition: true,
+      },
+      where: {
+        sprintId,
+        projectId,
+        isDeleted: false,
+      },
+    });
+
     return this.prisma.issues.create({
       data: {
         ...payload,
@@ -58,6 +70,18 @@ export class IssuesService {
           sprintId && !projectId ? { connect: { id: sprintId } } : undefined,
         Project:
           !sprintId && projectId ? { connect: { id: projectId } } : undefined,
+        sprintPosition:
+          sprintId && !projectId
+            ? maxPositions._max.sprintPosition
+              ? maxPositions._max.sprintPosition + 1
+              : 0
+            : undefined,
+        boardPosition:
+          !sprintId && projectId
+            ? maxPositions._max.boardPosition
+              ? maxPositions._max.boardPosition + 1
+              : 0
+            : undefined,
         createdBy,
       },
     });
