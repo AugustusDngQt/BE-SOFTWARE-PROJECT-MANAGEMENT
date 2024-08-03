@@ -47,7 +47,7 @@ export class MembersController {
   @Patch()
   async update(
     @Body() updateMemberDto: UpdateMemberDto,
-    user: IUserLogin,
+    @User() user: IUserLogin,
   ): Promise<Members> {
     return await this.membersService.update(updateMemberDto, user);
   }

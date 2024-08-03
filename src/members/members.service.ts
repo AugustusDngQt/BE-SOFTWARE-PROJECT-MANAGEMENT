@@ -3,10 +3,10 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IMemberResponse } from 'src/interfaces/member/member.interface';
-import { PostgresPrismaService } from 'src/prisma.service';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { MEMBER_MESSAGES } from 'src/constants/messages/member.message';
 import { type Members } from '@prisma/client';
+import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 
 @Injectable()
 export class MembersService {
@@ -79,15 +79,14 @@ export class MembersService {
       name: userLogin.name,
       email: userLogin.email,
     };
-    return null;
-    // const foundMember = await this.PostgresPrismaService.members.findUnique({
-    //   id:,
-    //   isDeleted: false,
-    // });
-    // return await this.PostgresPrismaService.members.update({
-    //   where: { id },
-    //   data: { status: status, updatedBy },
-    // });
+    if (!(await this.findOneById(id)))
+      throw new BadRequestException(
+        MEMBER_MESSAGES.MEMBER_NOT_FOUND_OR_DELETED,
+      );
+    return await this.PostgresPrismaService.members.update({
+      where: { id, isDeleted: false },
+      data: { status, updatedBy },
+    });
   }
 
   async remove(id: string, userLogin: IUserLogin): Promise<IMemberResponse> {
