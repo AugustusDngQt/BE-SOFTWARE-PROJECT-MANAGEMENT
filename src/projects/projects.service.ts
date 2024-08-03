@@ -23,6 +23,7 @@ import {
 } from 'src/interfaces/conversation/conversation-response.interface';
 import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
+import { Prisma, Projects } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {
@@ -83,10 +84,22 @@ export class ProjectsService {
     return { project, members, conversation };
   }
 
-  async findAllByCreator(userLogin: IUserLogin): Promise<IProjectResponse[]> {
-    const projects: IProjectResponse[] =
-      await this.PostgresPrismaService.projects.findMany({ where: {} });
-    return null;
+  async findAllByCreator(userLogin: IUserLogin): Promise<Projects[]> {
+    const creator: IExecutor = {
+      id: userLogin.id,
+      email: userLogin.email,
+      name: userLogin.name,
+    };
+    const projects: Projects[] =
+      await this.PostgresPrismaService.projects.findMany({
+        where: {
+          createdBy: { equals: creator as unknown as Prisma.JsonObject },
+          isDeleted: false,
+        },
+        include: { Members: true, Sprints: true, Issues: true },
+      });
+
+    return projects;
   }
 
   async findOneById(id: string): Promise<IProjectResponse> {

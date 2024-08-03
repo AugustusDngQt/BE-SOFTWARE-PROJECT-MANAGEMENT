@@ -15,7 +15,6 @@ import { UpdateIssueDto } from './dto/update-issue.dto';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { FindIssuesByInformationDto } from './dto/find-issues-by-information.dto';
-
 @Controller('issues')
 export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}

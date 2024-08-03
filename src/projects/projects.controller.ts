@@ -10,9 +10,13 @@ import {
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { ICreateProjectFunctionResponse } from 'src/interfaces/project/project-response.interface';
+import {
+  ICreateProjectFunctionResponse,
+  IProjectResponse,
+} from 'src/interfaces/project/project-response.interface';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
+import { Projects } from '@prisma/client';
 
 @Controller('projects')
 export class ProjectsController {
@@ -31,9 +35,14 @@ export class ProjectsController {
     // return this.projectsService.findAll();
   }
 
-  @Get(':id')
+  @Get('find-by-id/:id')
   async findOne(@Param('id') id: string) {
     return this.projectsService.findOneById(id);
+  }
+
+  @Get('find-by-creator')
+  async findByCreator(@User() user: IUserLogin): Promise<Projects[]> {
+    return await this.projectsService.findAllByCreator(user);
   }
 
   @Patch()

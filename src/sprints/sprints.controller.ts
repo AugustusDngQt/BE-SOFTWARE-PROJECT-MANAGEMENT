@@ -15,7 +15,6 @@ import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { ISprintResponse } from 'src/interfaces/sprint/sprint-response.interface';
 import { User } from 'src/decorators/user.decorator';
 import { FindSprintByProjectIdStatusDto } from './dto/find-sprints-by-projectid-&-status.dto';
-
 @Controller('sprints')
 export class SprintsController {
   constructor(private readonly sprintsService: SprintsService) {}
