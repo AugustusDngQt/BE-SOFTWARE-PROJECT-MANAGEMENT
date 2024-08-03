@@ -28,7 +28,6 @@ export class UsersService {
           id: userLogin.id,
           email: userLogin.email,
           name: userLogin.name,
-          role: '',
         }
       : null;
     const user: IUserResponse = await this.PostgresPrismaService.users.create({
@@ -60,7 +59,7 @@ export class UsersService {
   async findOneById(id: string): Promise<IUserResponse> {
     const user: IUserResponse =
       await this.PostgresPrismaService.users.findUnique({
-        where: { id },
+        where: { id, isDeleted: false },
       });
     return user;
   }

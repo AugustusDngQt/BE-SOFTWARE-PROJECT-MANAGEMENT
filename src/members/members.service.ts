@@ -6,6 +6,7 @@ import { IMemberResponse } from 'src/interfaces/member/member.interface';
 import { PostgresPrismaService } from 'src/prisma.service';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { MEMBER_MESSAGES } from 'src/constants/messages/member.message';
+import { type Members } from '@prisma/client';
 
 @Injectable()
 export class MembersService {
@@ -18,7 +19,6 @@ export class MembersService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
 
     const createdMember = await this.PostgresPrismaService.members.create({
@@ -68,8 +68,26 @@ export class MembersService {
     return members;
   }
 
-  update(id: number, updateMemberDto: UpdateMemberDto) {
-    return `This action updates a #${id} member`;
+  async update(
+    updateMemberDto: UpdateMemberDto,
+    userLogin: IUserLogin,
+  ): Promise<Members> {
+    const { id, status } = updateMemberDto;
+
+    const updatedBy: IExecutor = {
+      id: userLogin.id,
+      name: userLogin.name,
+      email: userLogin.email,
+    };
+    return null;
+    // const foundMember = await this.PostgresPrismaService.members.findUnique({
+    //   id:,
+    //   isDeleted: false,
+    // });
+    // return await this.PostgresPrismaService.members.update({
+    //   where: { id },
+    //   data: { status: status, updatedBy },
+    // });
   }
 
   async remove(id: string, userLogin: IUserLogin): Promise<IMemberResponse> {

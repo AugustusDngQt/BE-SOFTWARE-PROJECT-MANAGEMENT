@@ -21,7 +21,6 @@ export class AuthService {
         phoneNumber: user.phoneNumber,
         email: user.email,
         name: user.name,
-        role: user.role,
       };
     }
     return null;

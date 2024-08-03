@@ -107,6 +107,9 @@ model Members {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   isDeleted Boolean   @default(false)
+  roleId    String?   @db.Uuid
+  Role      Roles?    @relation(fields: [roleId], references: [id])
+  status    String    @default("Pending")
   createdBy Json?
   updatedBy Json?
   deletedBy Json?
@@ -126,6 +129,7 @@ model Roles {
   deletedBy       Json?
   isDeleted       Boolean           @default(false)
   RolePermissions RolePermissions[]
+  Members         Members[]
 }
 
 model Permissions {

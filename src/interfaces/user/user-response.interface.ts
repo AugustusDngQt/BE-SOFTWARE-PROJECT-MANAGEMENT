@@ -9,5 +9,4 @@ export interface IUserResponse {
   forgotPasswordToken: string;
   refreshToken: string;
   status: string;
-  role?: string;
 }

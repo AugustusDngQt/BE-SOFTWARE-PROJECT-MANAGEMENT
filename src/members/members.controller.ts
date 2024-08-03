@@ -13,6 +13,7 @@ import { UpdateMemberDto } from './dto/update-member.dto';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IMemberResponse } from 'src/interfaces/member/member.interface';
 import { User } from 'src/decorators/user.decorator';
+import { Members } from '@prisma/client';
 
 @Controller('members')
 export class MembersController {
@@ -43,12 +44,12 @@ export class MembersController {
     return this.membersService.findAllByProjectId(projectId);
   }
 
-  @Patch(':id')
+  @Patch()
   async update(
-    @Param('id') id: string,
     @Body() updateMemberDto: UpdateMemberDto,
-  ): Promise<string> {
-    return this.membersService.update(+id, updateMemberDto);
+    user: IUserLogin,
+  ): Promise<Members> {
+    return await this.membersService.update(updateMemberDto, user);
   }
 
   @Delete(':id')
