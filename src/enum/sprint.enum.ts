@@ -1,5 +1,6 @@
 export enum ESprintStatus {
   ACTIVE = 'Active',
+  COMPLETED = 'Completed',
   PENDING = 'Pending',
-  CLOSED = 'Closed',
+  CANCELLED = 'Cancelled',
 }

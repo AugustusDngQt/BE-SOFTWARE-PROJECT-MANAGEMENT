@@ -10,10 +10,7 @@ import {
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import {
-  ICreateProjectFunctionResponse,
-  IProjectResponse,
-} from 'src/interfaces/project/project-response.interface';
+import { ICreateProjectFunctionResponse } from 'src/interfaces/project/project-response.interface';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 
@@ -35,8 +32,8 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.projectsService.findOneById(id);
   }
 
   @Patch()

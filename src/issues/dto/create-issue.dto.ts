@@ -1,14 +1,12 @@
-// dto/create-issue.dto.ts
 import {
   IsString,
   IsOptional,
   IsUUID,
   IsEnum,
-  IsNumber,
   ValidateIf,
   IsDateString,
 } from 'class-validator';
-import { EIssueType, EIssueStatus, EIssuePriority } from 'src/enum/issue.enum';
+import { EIssueType, EIssuePriority } from 'src/enum/issue.enum';
 
 export class CreateIssueDto {
   @IsString()
@@ -19,9 +17,6 @@ export class CreateIssueDto {
 
   @IsEnum(EIssueType)
   type: string;
-
-  @IsEnum(EIssueStatus)
-  status: string;
 
   @IsEnum(EIssuePriority)
   priority: string;

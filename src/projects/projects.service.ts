@@ -5,7 +5,6 @@ import {
   ICreateProjectFunctionResponse,
   IProjectResponse,
 } from 'src/interfaces/project/project-response.interface';
-import { PostgresPrismaService } from 'src/prisma.service';
 import { PROJECT_MESSAGES } from 'src/constants/messages/project.message';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
@@ -23,6 +22,7 @@ import {
   IConversationResponse,
 } from 'src/interfaces/conversation/conversation-response.interface';
 import { IUserResponse } from 'src/interfaces/user/user-response.interface';
+import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 
 @Injectable()
 export class ProjectsService {
@@ -89,13 +89,10 @@ export class ProjectsService {
     return null;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
-  }
-
   async findOneById(id: string): Promise<IProjectResponse> {
     return await this.PostgresPrismaService.projects.findUnique({
       where: { id, isDeleted: false },
+      include: { Members: true, Sprints: true, Issues: true },
     });
   }
 

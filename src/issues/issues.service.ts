@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
-import { PostgresPrismaService } from 'src/prisma.service';
 import { IIssueResponse } from 'src/interfaces/issue/issue-response.interface';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
@@ -14,6 +13,7 @@ import { FindIssuesByInformationDto } from './dto/find-issues-by-information.dto
 import { SprintsService } from 'src/sprints/sprints.service';
 import { ProjectsService } from 'src/projects/projects.service';
 import { ISSUES_MESSAGES } from 'src/constants/messages/issue.message';
+import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 
 @Injectable()
 export class IssuesService {
@@ -63,6 +63,9 @@ export class IssuesService {
       },
     });
 
+    const maxBoardPosition = maxPositions._max.boardPosition ?? 0;
+    const maxSprintPosition = maxPositions._max.sprintPosition ?? 0;
+
     return this.prisma.issues.create({
       data: {
         ...payload,
@@ -71,17 +74,9 @@ export class IssuesService {
         Project:
           !sprintId && projectId ? { connect: { id: projectId } } : undefined,
         sprintPosition:
-          sprintId && !projectId
-            ? maxPositions._max.sprintPosition
-              ? maxPositions._max.sprintPosition + 1
-              : 0
-            : undefined,
+          sprintId && !projectId ? maxSprintPosition + 1 : undefined,
         boardPosition:
-          !sprintId && projectId
-            ? maxPositions._max.boardPosition
-              ? maxPositions._max.boardPosition + 1
-              : 0
-            : undefined,
+          !sprintId && projectId ? maxBoardPosition + 1 : undefined,
         createdBy,
       },
     });

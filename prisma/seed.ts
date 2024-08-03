@@ -4,6 +4,193 @@ import { PrismaClient as MongoPrismaClient } from '@prisma/mongo/client';
 const postgresPrisma = new PostgresPrismaClient();
 const mongoPrisma = new MongoPrismaClient();
 
+const memberData = [
+  {
+    id: 'cb9b8759-9209-4c89-b670-38e1d230941e',
+    userId: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+    projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
+    createdAt: new Date('2024-08-03T07:54:59.674Z'),
+    updatedAt: new Date('2024-08-03T07:54:59.674Z'),
+    deletedAt: null,
+    isDeleted: false,
+    roleId: null,
+    status: 'Pending',
+    createdBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    updatedBy: null,
+    deletedBy: null,
+  },
+  {
+    id: '56219812-805e-439c-ba68-502a64b2e812',
+    userId: '4701c89d-9dbb-443f-bba9-5aca27d31c44',
+    projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
+    createdAt: new Date('2024-08-03T07:54:59.674Z'),
+    updatedAt: new Date('2024-08-03T08:01:22.567Z'),
+    deletedAt: null,
+    isDeleted: false,
+    roleId: null,
+    status: 'Accepted',
+    createdBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    updatedBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    deletedBy: null,
+  },
+];
+const sprintData = [
+  {
+    id: 'f924fe53-c5f7-429e-b217-2a74e2658264',
+    name: 'Sprint 1',
+    description: 'Initial sprint for the project 1',
+    startDate: null,
+    endDate: '2024-08-14T23:59:59.000Z',
+    status: 'Active',
+    projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
+    assigneeId: null,
+    createdAt: '2024-08-03T13:47:57.280Z',
+    updatedAt: '2024-08-03T13:47:57.280Z',
+    deletedAt: null,
+    createdBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    updatedBy: null,
+    deletedBy: null,
+    isDeleted: false,
+  },
+];
+const issueData = [
+  {
+    id: '5130f617-2243-46b2-a508-f54832454bb6',
+    name: 'Login',
+    key: '001',
+    type: 'Task',
+    status: 'To do',
+    priority: '3',
+    sprintPosition: null,
+    boardPosition: 0,
+    reporterId: null,
+    assigneeId: null,
+    issueParrentId: null,
+    sprintId: null,
+    projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
+    note: null,
+    description: 'Users are unable to login due to a server error.',
+    startDate: null,
+    endDate: '2024-08-30T17:48:16.577Z',
+    createdAt: '2024-08-03T13:42:14.685Z',
+    updatedAt: '2024-08-03T13:42:14.685Z',
+    deletedAt: null,
+    createdBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    updatedBy: null,
+    deletedBy: null,
+    isDeleted: false,
+  },
+  {
+    id: '888e70d6-ecd0-4e5d-bd67-af896ed410ca',
+    name: 'Register',
+    key: '002',
+    type: 'Task',
+    status: 'To do',
+    priority: '1',
+    sprintPosition: null,
+    boardPosition: 1,
+    reporterId: null,
+    assigneeId: null,
+    issueParrentId: null,
+    sprintId: null,
+    projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
+    note: null,
+    description: 'Users register account',
+    startDate: null,
+    endDate: '2024-08-30T17:48:16.577Z',
+    createdAt: '2024-08-03T13:46:32.645Z',
+    updatedAt: '2024-08-03T13:46:32.645Z',
+    deletedAt: null,
+    createdBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    updatedBy: null,
+    deletedBy: null,
+    isDeleted: false,
+  },
+  {
+    id: '990d19d3-a902-4a18-adb7-1b6b71e5ef06',
+    name: 'Create User',
+    key: '003',
+    type: 'Task',
+    status: 'To do',
+    priority: '1',
+    sprintPosition: null,
+    boardPosition: 2,
+    reporterId: null,
+    assigneeId: null,
+    issueParrentId: null,
+    sprintId: null,
+    projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
+    note: null,
+    description: 'Create new user',
+    startDate: null,
+    endDate: '2024-08-30T17:48:16.577Z',
+    createdAt: '2024-08-03T13:47:14.007Z',
+    updatedAt: '2024-08-03T13:47:14.007Z',
+    deletedAt: null,
+    createdBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    updatedBy: null,
+    deletedBy: null,
+    isDeleted: false,
+  },
+  {
+    id: 'ce61195c-d9d1-434b-a87b-33e0f1ef490c',
+    name: 'Update User',
+    key: '004',
+    type: 'Task',
+    status: 'To do',
+    priority: '1',
+    sprintPosition: 1,
+    boardPosition: null,
+    reporterId: null,
+    assigneeId: null,
+    issueParrentId: null,
+    sprintId: 'f924fe53-c5f7-429e-b217-2a74e2658264',
+    projectId: null,
+    note: null,
+    description: 'Update new user',
+    startDate: null,
+    endDate: '2024-08-30T17:48:16.577Z',
+    createdAt: '2024-08-03T13:48:33.410Z',
+    updatedAt: '2024-08-03T13:48:33.410Z',
+    deletedAt: null,
+    createdBy: {
+      id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
+      name: 'Duy Khánh DTU',
+      email: 'trannduykhanh@dtu.edu.vn',
+    },
+    updatedBy: null,
+    deletedBy: null,
+    isDeleted: false,
+  },
+];
 (async function () {
   try {
     await mongoPrisma.conversations.deleteMany({});
@@ -55,38 +242,16 @@ const mongoPrisma = new MongoPrismaClient();
       ],
     });
 
-    await postgresPrisma.projects.create({
-      data: {
-        id: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
-        name: 'Software project management',
-        description: null,
-        category: 'Software',
-        createdAt: new Date('2024-08-03T07:54:59.046Z'),
-        updatedAt: new Date('2024-08-03T07:54:59.046Z'),
-        deletedAt: null,
-        createdBy: {
-          id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
-          name: 'Duy Khánh DTU',
-          email: 'trannduykhanh@dtu.edu.vn',
-        },
-        updatedBy: null,
-        deletedBy: null,
-        isDeleted: false,
-      },
-    });
-
-    await postgresPrisma.members.createMany({
+    await postgresPrisma.projects.createMany({
       data: [
         {
-          id: 'cb9b8759-9209-4c89-b670-38e1d230941e',
-          userId: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
-          projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
-          createdAt: new Date('2024-08-03T07:54:59.674Z'),
-          updatedAt: new Date('2024-08-03T07:54:59.674Z'),
+          id: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
+          name: 'Software project management',
+          description: null,
+          category: 'Software',
+          createdAt: new Date('2024-08-03T07:54:59.046Z'),
+          updatedAt: new Date('2024-08-03T07:54:59.046Z'),
           deletedAt: null,
-          isDeleted: false,
-          roleId: null,
-          status: 'Pending',
           createdBy: {
             id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
             name: 'Duy Khánh DTU',
@@ -94,30 +259,21 @@ const mongoPrisma = new MongoPrismaClient();
           },
           updatedBy: null,
           deletedBy: null,
-        },
-        {
-          id: '56219812-805e-439c-ba68-502a64b2e812',
-          userId: '4701c89d-9dbb-443f-bba9-5aca27d31c44',
-          projectId: '86d2c0bf-1e5f-43c2-8cee-0a8dedfc8cff',
-          createdAt: new Date('2024-08-03T07:54:59.674Z'),
-          updatedAt: new Date('2024-08-03T08:01:22.567Z'),
-          deletedAt: null,
           isDeleted: false,
-          roleId: null,
-          status: 'Accepted',
-          createdBy: {
-            id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
-            name: 'Duy Khánh DTU',
-            email: 'trannduykhanh@dtu.edu.vn',
-          },
-          updatedBy: {
-            id: '935b8157-0517-4ef1-9c0a-0744cf94af5a',
-            name: 'Duy Khánh DTU',
-            email: 'trannduykhanh@dtu.edu.vn',
-          },
-          deletedBy: null,
         },
       ],
+    });
+
+    memberData.map(async (item) => {
+      const { projectId, roleId, userId, ...payload } = item;
+      await postgresPrisma.members.create({
+        data: {
+          ...payload,
+          Project: { connect: { id: projectId } },
+          User: { connect: { id: userId } },
+          Role: roleId ? { connect: { id: roleId } } : undefined,
+        },
+      });
     });
 
     await mongoPrisma.conversations.createMany({
@@ -148,6 +304,27 @@ const mongoPrisma = new MongoPrismaClient();
           isDeleted: false,
         },
       ],
+    });
+
+    sprintData.map(async (item) => {
+      const { projectId, assigneeId, ...payload } = item;
+      await postgresPrisma.sprints.create({
+        data: {
+          ...payload,
+          Project: { connect: { id: projectId } },
+        },
+      });
+    });
+
+    issueData.map(async (item) => {
+      const { projectId, sprintId, ...payload } = item;
+      await postgresPrisma.issues.create({
+        data: {
+          ...payload,
+          Sprint: sprintId ? { connect: { id: sprintId } } : undefined,
+          Project: projectId ? { connect: { id: projectId } } : undefined,
+        },
+      });
     });
 
     console.log('Seed data inserted successfully.');
