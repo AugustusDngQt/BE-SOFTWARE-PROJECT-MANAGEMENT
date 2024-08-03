@@ -31,7 +31,6 @@ export class ConversationsService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
 
     const conversation = await this.mongoPrismaService.conversations.create({
@@ -91,7 +90,6 @@ export class ConversationsService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     const updatedConversation =
       await this.mongoPrismaService.conversations.update({

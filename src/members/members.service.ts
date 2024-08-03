@@ -95,7 +95,6 @@ export class MembersService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     const deletedMember = await this.PostgresPrismaService.members.update({
       where: { id },
@@ -132,7 +131,6 @@ export class MembersService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     const restoredMember = await this.PostgresPrismaService.members.update({
       where: { id: id },

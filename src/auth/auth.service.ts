@@ -42,7 +42,6 @@ export class AuthService {
       phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
-      role: userLogin.role,
     };
 
     return this.jwtService.sign(payload);
@@ -56,7 +55,6 @@ export class AuthService {
       phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
-      role: userLogin.role,
     };
 
     return this.jwtService.sign(payload, {
@@ -73,7 +71,6 @@ export class AuthService {
       phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
-      role: userLogin.role,
     };
 
     return this.jwtService.sign(payload, {
@@ -90,7 +87,6 @@ export class AuthService {
       phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
-      role: userLogin.role,
     };
 
     return this.jwtService.sign(payload, {

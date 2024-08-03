@@ -32,7 +32,6 @@ export class IssuesService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     if (
       await this.prisma.issues.findUnique({
@@ -73,7 +72,6 @@ export class IssuesService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     const issue = await this.findById(id);
     if (!issue) {
@@ -145,7 +143,6 @@ export class IssuesService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     if (!issue) {
       throw new NotFoundException(ISSUES_MESSAGES.ISSUE_NOT_FOUND_OR_DELETED);

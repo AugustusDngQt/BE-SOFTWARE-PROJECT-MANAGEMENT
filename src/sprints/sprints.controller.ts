@@ -6,6 +6,7 @@ import {
   Get,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CreateSprintDto } from './dto/create-sprint.dto';
 import { UpdateSprintDto } from './dto/update-sprint.dto';
@@ -13,6 +14,7 @@ import { SprintsService } from './sprints.service';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { ISprintResponse } from 'src/interfaces/sprint/sprint-response.interface';
 import { User } from 'src/decorators/user.decorator';
+import { FindSprintByProjectIdStatusDto } from './dto/find-sprints-by-projectid-&-status.dto';
 
 @Controller('sprints')
 export class SprintsController {
@@ -24,13 +26,6 @@ export class SprintsController {
     @User() userLogin: IUserLogin,
   ): Promise<ISprintResponse> {
     return this.sprintsService.create(createSprintDto, userLogin);
-  }
-
-  @Get(':projectId')
-  async findAllByProjectId(
-    @Param('projectId') projectId: string,
-  ): Promise<ISprintResponse[]> {
-    return this.sprintsService.findAllByProjectId(projectId);
   }
 
   @Patch()
@@ -46,14 +41,14 @@ export class SprintsController {
     return await this.sprintsService.restore(id);
   }
 
-  @Get(':id')
+  @Get('find-one-by-id/:id')
   async findById(@Param('id') id: string): Promise<ISprintResponse> {
     return await this.sprintsService.findById(id);
   }
 
-  @Get('find/:projectId/:status')
-  async find(
-    @Param() query: { projectId: string; status?: string },
+  @Get()
+  async findMany(
+    @Query() query: FindSprintByProjectIdStatusDto,
   ): Promise<ISprintResponse[]> {
     return await this.sprintsService.find(query);
   }

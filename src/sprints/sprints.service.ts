@@ -13,10 +13,16 @@ import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { ESprintStatus } from 'src/enum/sprint.enum';
 import type { Sprints } from '@prisma/client';
+import { FindSprintByProjectIdStatusDto } from './dto/find-sprints-by-projectid-&-status.dto';
+import { ProjectsService } from 'src/projects/projects.service';
+import { PROJECT_MESSAGES } from 'src/constants/messages/project.message';
 
 @Injectable()
 export class SprintsService {
-  constructor(private PostgresPrismaService: PostgresPrismaService) {}
+  constructor(
+    private PostgresPrismaService: PostgresPrismaService,
+    private projectService: ProjectsService,
+  ) {}
 
   async create(
     createSprintDto: CreateSprintDto,
@@ -34,7 +40,6 @@ export class SprintsService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
 
     const sprint: ISprintResponse =
@@ -53,15 +58,6 @@ export class SprintsService {
     return sprint;
   }
 
-  async findAllByProjectId(projectId: string): Promise<ISprintResponse[]> {
-    const sprints: Sprints[] =
-      await this.PostgresPrismaService.sprints.findMany({
-        where: { projectId },
-        include: { issues: true, Assignee: true },
-      });
-    return sprints;
-  }
-
   async update(
     updateSprintDto: UpdateSprintDto,
     userLogin: IUserLogin,
@@ -71,10 +67,9 @@ export class SprintsService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     const existingSprint = await this.PostgresPrismaService.sprints.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
     });
     if (!existingSprint) {
       throw new BadRequestException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
@@ -95,10 +90,10 @@ export class SprintsService {
 
   async restore(id: string): Promise<ISprintResponse> {
     const sprint = await this.PostgresPrismaService.sprints.findUnique({
-      where: { id },
+      where: { id, isDeleted: true },
     });
-    if (!sprint || !sprint.deletedAt) {
-      throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
+    if (!sprint) {
+      throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND_OR_RESTORED);
     }
     return await this.PostgresPrismaService.sprints.update({
       where: { id },
@@ -109,21 +104,25 @@ export class SprintsService {
   async findById(id: string): Promise<ISprintResponse> {
     const sprint = await this.PostgresPrismaService.sprints.findUnique({
       where: { id, isDeleted: false },
+      include: { issues: true, Assignee: true },
     });
     return sprint;
   }
 
-  async find(query: {
-    projectId?: string;
-    status?: string;
-  }): Promise<ISprintResponse[]> {
+  async find(
+    query: FindSprintByProjectIdStatusDto,
+  ): Promise<ISprintResponse[]> {
     const { projectId, status } = query;
-    return this.PostgresPrismaService.sprints.findMany({
+    if (!(await this.projectService.findOneById(projectId)))
+      throw new BadRequestException(PROJECT_MESSAGES.PROJECT_IS_NOT_FOUND);
+
+    return await this.PostgresPrismaService.sprints.findMany({
       where: {
         isDeleted: false,
-        ...(projectId ? { projectId } : {}),
-        ...(status ? { status } : {}),
+        projectId,
+        status: status ? status : undefined,
       },
+      include: { issues: true, Assignee: true },
     });
   }
 
@@ -132,7 +131,6 @@ export class SprintsService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     const sprint = await this.PostgresPrismaService.sprints.findUnique({
       where: { id },
@@ -140,7 +138,7 @@ export class SprintsService {
     if (!sprint) {
       throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
     }
-    return this.PostgresPrismaService.sprints.update({
+    return await this.PostgresPrismaService.sprints.update({
       where: { id },
       data: { deletedBy, deletedAt: new Date(), isDeleted: true },
     });

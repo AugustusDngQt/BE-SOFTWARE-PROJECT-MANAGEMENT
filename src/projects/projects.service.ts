@@ -51,7 +51,6 @@ export class ProjectsService {
       id: userLogin.id,
       name: userLogin.name,
       email: userLogin.email,
-      role: userLogin.role,
     };
     const payloadMemberIds: string[] = [
       userLogin.id,
