@@ -84,7 +84,7 @@ model Sprints {
   description String?
   startDate   DateTime?
   endDate     DateTime
-  status      String
+  status      String    @default("Pending")
   projectId   String    @db.Uuid
   assigneeId  String?   @db.Uuid
   createdAt   DateTime  @default(now())

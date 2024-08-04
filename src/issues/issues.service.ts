@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
@@ -13,6 +14,12 @@ import { SprintsService } from 'src/sprints/sprints.service';
 import { ProjectsService } from 'src/projects/projects.service';
 import { ISSUES_MESSAGES } from 'src/constants/messages/issue.message';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
+import { ESprintStatus } from 'src/enum/sprint.enum';
+import { ChangePositionIssueDto } from './dto/change-position.dto';
+import { Issues } from '@prisma/client';
+import { SPRINT_MESSAGES } from 'src/constants/messages/sprint.message';
+import { EIssueStatus } from 'src/enum/issue.enum';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class IssuesService {
@@ -20,6 +27,7 @@ export class IssuesService {
     private prisma: PostgresPrismaService,
     private sprintsService: SprintsService,
     private projectsService: ProjectsService,
+    private usersService: UsersService,
   ) {}
 
   async create(
@@ -78,6 +86,7 @@ export class IssuesService {
           !sprintId && projectId ? maxBoardPosition + 1 : undefined,
         createdBy,
       },
+      include: { Comments: true, Sprint: true },
     });
   }
 
@@ -92,15 +101,43 @@ export class IssuesService {
       email: userLogin.email,
     };
     const issue = await this.findById(id);
-    if (!issue) {
+    if (!issue)
       throw new NotFoundException(ISSUES_MESSAGES.ISSUE_NOT_FOUND_OR_DELETED);
+
+    if (data.status && data.status !== EIssueStatus.TO_DO) {
+      if (
+        issue.sprintId !== null &&
+        (issue as any).Sprint.status !== ESprintStatus.ACTIVE
+      )
+        throw new BadRequestException(ISSUES_MESSAGES.SPRINT_NOT_ACTIVE);
+      if (!issue.reporterId || !issue.assigneeId)
+        throw new BadRequestException(
+          ISSUES_MESSAGES.AN_ISSUES_MUST_HAVE_A_REPORTER_AND_A_ASSIGNEE,
+        );
+      if (issue.assigneeId !== userLogin.id)
+        throw new ForbiddenException(
+          SPRINT_MESSAGES.ONLY_ASSIGNEE_CAN_START_SPRINT,
+        );
     }
+
+    if (
+      updateIssueDto.reporterId &&
+      !(await this.usersService.findOneById(updateIssueDto.reporterId))
+    )
+      throw new BadRequestException(ISSUES_MESSAGES.REPORTER_NOT_FOUND);
+    if (
+      updateIssueDto.assigneeId &&
+      !(await this.usersService.findOneById(updateIssueDto.assigneeId))
+    )
+      throw new BadRequestException(ISSUES_MESSAGES.ASSIGNEE_NOT_FOUND);
+
     return this.prisma.issues.update({
       where: { id },
       data: {
         ...data,
         updatedBy,
       },
+      include: { Comments: true, Sprint: true },
     });
   }
 
@@ -113,10 +150,11 @@ export class IssuesService {
     return this.prisma.issues.update({
       where: { id },
       data: { isDeleted: false, deletedAt: null, deletedBy: null },
+      include: { Comments: true, Sprint: true },
     });
   }
 
-  async findById(id: string): Promise<IIssueResponse> {
+  async findById(id: string): Promise<Issues> {
     const issue = await this.prisma.issues.findUnique({
       where: { id, isDeleted: false },
       include: { Comments: true, Sprint: true },
@@ -168,7 +206,76 @@ export class IssuesService {
     return this.prisma.issues.update({
       where: { id },
       data: { deletedAt: new Date(), deletedBy, isDeleted: true },
+      include: { Comments: true, Sprint: true },
     });
   }
-  // Lấy dữ liệu có sắp xếp (độ ưu tiên, trạng thái, vị trí trên bảng)
+  async changePosition(
+    body: ChangePositionIssueDto,
+    userLogin: IUserLogin,
+  ): Promise<Issues[]> {
+    const { sprintPosition, boardPosition } = body;
+    const updatedBy: IExecutor = {
+      id: userLogin.id,
+      name: userLogin.name,
+      email: userLogin.email,
+    };
+    if (sprintPosition) {
+      const { issueId1, issueId2 } = sprintPosition;
+      const issue1 = await this.findById(issueId1);
+      const issue2 = await this.findById(issueId2);
+      if (!issue1 || !issue2) {
+        throw new NotFoundException(ISSUES_MESSAGES.ISSUE_NOT_FOUND_OR_DELETED);
+      }
+      const [issueUpdated1, issueUpdated2] = await Promise.all([
+        this.prisma.issues.update({
+          where: {
+            id: issueId1,
+          },
+          data: {
+            sprintPosition: issue2.sprintPosition,
+            updatedBy,
+          },
+        }),
+        this.prisma.issues.update({
+          where: {
+            id: issueId2,
+          },
+          data: {
+            sprintPosition: issue1.sprintPosition,
+            updatedBy,
+          },
+        }),
+      ]);
+      return [issueUpdated1, issueUpdated2];
+    } else if (boardPosition) {
+      const { issueId1, issueId2 } = boardPosition;
+      const issue1 = await this.findById(issueId1);
+      const issue2 = await this.findById(issueId2);
+      if (!issue1 || !issue2) {
+        throw new NotFoundException(ISSUES_MESSAGES.ISSUE_NOT_FOUND_OR_DELETED);
+      }
+
+      const [issueUpdated1, issueUpdated2] = await Promise.all([
+        this.prisma.issues.update({
+          where: {
+            id: issueId1,
+          },
+          data: {
+            boardPosition: issue2.boardPosition,
+            updatedBy,
+          },
+        }),
+        this.prisma.issues.update({
+          where: {
+            id: issueId2,
+          },
+          data: {
+            boardPosition: issue1.boardPosition,
+            updatedBy,
+          },
+        }),
+      ]);
+      return [issueUpdated1, issueUpdated2];
+    }
+  }
 }

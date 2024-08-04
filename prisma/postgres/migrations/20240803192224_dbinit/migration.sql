@@ -75,7 +75,7 @@ CREATE TABLE "Sprints" (
     "description" TEXT,
     "startDate" TIMESTAMP(3),
     "endDate" TIMESTAMP(3) NOT NULL,
-    "status" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'Pending',
     "projectId" UUID NOT NULL,
     "assigneeId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

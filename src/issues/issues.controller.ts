@@ -15,6 +15,7 @@ import { UpdateIssueDto } from './dto/update-issue.dto';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { FindIssuesByInformationDto } from './dto/find-issues-by-information.dto';
+import { ChangePositionIssueDto } from './dto/change-position.dto';
 @Controller('issues')
 export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}
@@ -53,5 +54,13 @@ export class IssuesController {
   @Delete(':id')
   async remove(@Param('id') id: string, @User() user: IUserLogin) {
     return this.issuesService.remove(id, user);
+  }
+
+  @Post('change-position')
+  async changePosition(
+    @Body() body: ChangePositionIssueDto,
+    @User() user: IUserLogin,
+  ) {
+    return this.issuesService.changePosition(body, user);
   }
 }

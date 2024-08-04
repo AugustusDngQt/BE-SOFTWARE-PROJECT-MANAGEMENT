@@ -56,4 +56,9 @@ export class SprintsController {
   async remove(@Param('id') id: string, @User() userLogin: IUserLogin) {
     return await this.sprintsService.remove(id, userLogin);
   }
+
+  @Get('start-sprint/:id')
+  async startSprint(@Param('id') id: string, @User() userLogin: IUserLogin) {
+    return await this.sprintsService.startSprint(id, userLogin);
+  }
 }

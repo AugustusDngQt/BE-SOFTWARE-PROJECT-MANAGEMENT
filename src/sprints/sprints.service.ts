@@ -1,13 +1,13 @@
 // sprints.service.ts
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateSprintDto } from './dto/create-sprint.dto';
 import { UpdateSprintDto } from './dto/update-sprint.dto';
 import { ISprintResponse } from 'src/interfaces/sprint/sprint-response.interface';
-import { PostgresPrismaService } from 'src/prisma.service';
 import { SPRINT_MESSAGES } from 'src/constants/messages/sprint.message'; // Import messages
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
@@ -15,6 +15,7 @@ import { ESprintStatus } from 'src/enum/sprint.enum';
 import { FindSprintByProjectIdStatusDto } from './dto/find-sprints-by-projectid-&-status.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 import { PROJECT_MESSAGES } from 'src/constants/messages/project.message';
+import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 
 @Injectable()
 export class SprintsService {
@@ -48,8 +49,7 @@ export class SprintsService {
             ? createSprintDto.description
             : '',
           ...payload,
-          project: { connect: { id: projectId } },
-          status: ESprintStatus.ACTIVE,
+          Project: { connect: { id: projectId } },
           createdBy,
         },
       });
@@ -103,7 +103,7 @@ export class SprintsService {
   async findById(id: string): Promise<ISprintResponse> {
     const sprint = await this.PostgresPrismaService.sprints.findUnique({
       where: { id, isDeleted: false },
-      include: { issues: true, Assignee: true },
+      include: { Issues: true, Assignee: true },
     });
     return sprint;
   }
@@ -121,7 +121,7 @@ export class SprintsService {
         projectId,
         status: status ? status : undefined,
       },
-      include: { issues: true, Assignee: true },
+      include: { Issues: true, Assignee: true },
     });
   }
 
@@ -140,6 +140,32 @@ export class SprintsService {
     return await this.PostgresPrismaService.sprints.update({
       where: { id },
       data: { deletedBy, deletedAt: new Date(), isDeleted: true },
+    });
+  }
+
+  async startSprint(
+    id: string,
+    userLogin: IUserLogin,
+  ): Promise<ISprintResponse> {
+    const updatedBy: IExecutor = {
+      id: userLogin.id,
+      name: userLogin.name,
+      email: userLogin.email,
+    };
+    const sprint = await this.findById(id);
+    if (!sprint) {
+      throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
+    }
+    if (sprint.assigneeId === null || sprint.assigneeId !== userLogin.id)
+      throw new ForbiddenException(
+        SPRINT_MESSAGES.ONLY_ASSIGNEE_CAN_START_SPRINT,
+      );
+    if (sprint.status === ESprintStatus.ACTIVE) {
+      throw new BadRequestException(SPRINT_MESSAGES.SPRINT_ALREADY_STARTED);
+    }
+    return await this.PostgresPrismaService.sprints.update({
+      where: { id },
+      data: { status: ESprintStatus.ACTIVE, startDate: new Date(), updatedBy },
     });
   }
 }

@@ -8,6 +8,7 @@ import {
   Validate,
   ValidateIf,
   IsNotIn,
+  IsObject,
 } from 'class-validator';
 import { EIssueType, EIssueStatus, EIssuePriority } from 'src/enum/issue.enum';
 
@@ -31,14 +32,6 @@ export class UpdateIssueDto {
   @IsOptional()
   @IsEnum(EIssuePriority)
   priority?: string;
-
-  @IsOptional()
-  @IsNumber()
-  sprintPosition?: number;
-
-  @IsOptional()
-  @IsNumber()
-  boardPosition?: number;
 
   @IsOptional()
   @IsUUID('4')
