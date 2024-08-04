@@ -2,6 +2,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,11 +18,13 @@ import { FindSprintByProjectIdStatusDto } from './dto/find-sprints-by-projectid-
 import { ProjectsService } from 'src/projects/projects.service';
 import { PROJECT_MESSAGES } from 'src/constants/messages/project.message';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
+import { Sprints } from '@prisma/client';
 
 @Injectable()
 export class SprintsService {
   constructor(
     private PostgresPrismaService: PostgresPrismaService,
+    @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
   ) {}
 
@@ -100,7 +104,7 @@ export class SprintsService {
     });
   }
 
-  async findById(id: string): Promise<ISprintResponse> {
+  async findById(id: string): Promise<Sprints> {
     const sprint = await this.PostgresPrismaService.sprints.findUnique({
       where: { id, isDeleted: false },
       include: { Issues: true, Assignee: true },

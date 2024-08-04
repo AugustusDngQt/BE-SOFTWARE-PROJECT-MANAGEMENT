@@ -5,6 +5,7 @@ import { IMemberResponse } from '../member/member.interface';
 export interface IUpdateMembers {
   id?: string;
   idUser?: string;
+  roleId: string;
   type: ETypeUpdateMember;
 }
 

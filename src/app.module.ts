@@ -15,6 +15,7 @@ import { SprintsModule } from './sprints/sprints.module';
 import { IssuesModule } from './issues/issues.module';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PermissionsModule } from './permissions/permissions.module';
     IssuesModule,
     RolesModule,
     PermissionsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

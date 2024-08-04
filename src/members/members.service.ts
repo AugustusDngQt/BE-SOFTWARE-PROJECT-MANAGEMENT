@@ -25,6 +25,7 @@ export class MembersService {
       data: {
         User: { connect: { id: createMemberDto.userId } },
         Project: { connect: { id: createMemberDto.projectId } },
+        Role: { connect: { id: createMemberDto.roleId } },
         createdBy,
       },
       include: { User: true, Project: true },

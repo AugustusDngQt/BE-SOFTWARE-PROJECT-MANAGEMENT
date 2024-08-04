@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import {
@@ -23,7 +28,8 @@ import {
 } from 'src/interfaces/conversation/conversation-response.interface';
 import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
-import { Prisma, Projects } from '@prisma/client';
+import { Issues, Members, Prisma, Projects, Sprints } from '@prisma/client';
+import { SprintsService } from 'src/sprints/sprints.service';
 
 @Injectable()
 export class ProjectsService {
@@ -32,12 +38,14 @@ export class ProjectsService {
     private conversationService: ConversationsService,
     private memberService: MembersService,
     private usersService: UsersService,
+    @Inject(forwardRef(() => SprintsService))
+    private sprintsService: SprintsService,
   ) {}
   async create(
     createProjectDto: CreateProjectDto,
     userLogin: IUserLogin,
   ): Promise<ICreateProjectFunctionResponse> {
-    const { memberIds, ...payload } = createProjectDto;
+    const { memberIds, roleId, ...payload } = createProjectDto;
     if (await this.findOneByUniqueField(createProjectDto.name))
       throw new BadRequestException({
         message: PROJECT_MESSAGES.PROJECT_IS_ALREADY_EXIST,
@@ -76,7 +84,7 @@ export class ProjectsService {
     const members: IMemberResponse[] = await Promise.all(
       payloadMemberIds.map(async (id: string) => {
         return await this.memberService.create(
-          { userId: id, projectId: project.id },
+          { userId: id, projectId: project.id, roleId },
           userLogin,
         );
       }),
@@ -84,21 +92,24 @@ export class ProjectsService {
     return { project, members, conversation };
   }
 
-  async findAllByCreator(userLogin: IUserLogin): Promise<Projects[]> {
+  async findAllByCreator(userLogin: IUserLogin) {
     const creator: IExecutor = {
       id: userLogin.id,
       email: userLogin.email,
       name: userLogin.name,
     };
-    const projects: Projects[] =
-      await this.PostgresPrismaService.projects.findMany({
-        where: {
-          createdBy: { equals: creator as unknown as Prisma.JsonObject },
-          isDeleted: false,
-        },
-        include: { Members: true, Sprints: true, Issues: true },
-      });
 
+    const projects = await this.PostgresPrismaService.projects.findMany({
+      where: {
+        createdBy: { equals: creator as unknown as Prisma.JsonObject },
+        isDeleted: false,
+      },
+      include: {
+        Members: { include: { User: true, Project: true, Role: true } },
+        Sprints: { include: { Issues: true } },
+        Issues: true,
+      },
+    });
     return projects;
   }
 
@@ -158,7 +169,11 @@ export class ProjectsService {
             await this.memberService.restoreById(isMemberExist.id, userLogin);
           } else {
             await this.memberService.create(
-              { userId: memberAdd.idUser, projectId: id },
+              {
+                userId: memberAdd.idUser,
+                projectId: id,
+                roleId: memberAdd.roleId,
+              },
               userLogin,
             );
           }

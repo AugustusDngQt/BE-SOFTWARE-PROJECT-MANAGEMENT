@@ -22,4 +22,6 @@ export class CreateProjectDto {
   @IsArray()
   @IsUUID('4', { each: true })
   memberIds: string[];
+  @IsUUID('4')
+  roleId: string;
 }

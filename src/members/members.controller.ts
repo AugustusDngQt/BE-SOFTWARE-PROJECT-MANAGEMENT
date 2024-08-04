@@ -24,7 +24,7 @@ export class MembersController {
     @Body() createMemberDto: CreateMemberDto,
     @User() userLogin: IUserLogin,
   ): Promise<IMemberResponse> {
-    return this.membersService.create(createMemberDto, userLogin);
+    return await this.membersService.create(createMemberDto, userLogin);
   }
 
   @Get()
@@ -32,7 +32,7 @@ export class MembersController {
     return this.membersService.findAll();
   }
 
-  @Get(':id')
+  @Get('find-by-id/:id')
   async findOneById(@Param('id') id: string): Promise<IMemberResponse> {
     return this.membersService.findOneById(id);
   }
