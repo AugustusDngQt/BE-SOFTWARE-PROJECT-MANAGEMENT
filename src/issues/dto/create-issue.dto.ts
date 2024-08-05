@@ -22,8 +22,4 @@ export class CreateIssueDto {
   @IsOptional()
   @IsUUID('4')
   sprintId?: string;
-
-  @IsOptional()
-  @IsString()
-  reporterId?: string;
 }

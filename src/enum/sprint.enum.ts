@@ -5,9 +5,9 @@ export enum ESprintStatus {
 }
 
 export enum ESprintDuration {
-  ONE_WEEK = 'ONE_WEEK',
-  TWO_WEEKS = 'TWO_WEEKS',
-  THREE_WEEKS = 'THREE_WEEKS',
-  FOUR_WEEKS = 'FOUR_WEEKS',
-  CUSTOM = 'CUSTOM',
+  ONE_WEEK = '1 week',
+  TWO_WEEKS = '2 weeks',
+  THREE_WEEKS = '3 weeks',
+  FOUR_WEEKS = '4 weeks',
+  CUSTOM = 'custom',
 }

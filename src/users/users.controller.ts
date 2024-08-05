@@ -14,6 +14,7 @@ import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { Public } from 'src/decorators/is-public.decorator';
+import { Users } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -33,6 +34,11 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('authentications')
+  async authentications(@User() user: IUserLogin): Promise<{ user: Users }> {
+    return { user: await this.usersService.findOneById(user.id) };
   }
 
   @Get(':id')

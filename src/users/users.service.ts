@@ -43,12 +43,10 @@ export class UsersService {
     });
   }
 
-  async findOneById(id: string): Promise<IUserResponse> {
-    const user: IUserResponse =
-      await this.PostgresPrismaService.users.findUnique({
-        where: { id },
-      });
-    return user;
+  async findOneById(id: string): Promise<Users> {
+    return await this.PostgresPrismaService.users.findUnique({
+      where: { id },
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

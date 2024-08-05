@@ -6,7 +6,6 @@ import {
   Delete,
   Body,
   Param,
-  Query,
   Patch,
 } from '@nestjs/common';
 import { IssuesService } from './issues.service';
@@ -14,6 +13,7 @@ import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
+import { Issues, Users } from '@prisma/client';
 @Controller('issues')
 export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}
@@ -43,7 +43,9 @@ export class IssuesController {
   }
 
   @Get()
-  async find(@User() user: IUserLogin) {
+  async find(
+    @User() user: IUserLogin,
+  ): Promise<{ issues: Issues[] | (Issues & { assignee: Users })[] }> {
     return { issues: await this.issuesService.find(user) };
   }
 

@@ -59,6 +59,7 @@ export class IssuesService {
     return await this.prisma.issues.create({
       data: {
         ...payload,
+        reporterId: userLogin.id,
         Sprint: sprintId ? { connect: { id: sprintId } } : undefined,
         key: `Issue-${issues.length + 1}`,
         creatorId: userLogin.id,
@@ -109,13 +110,30 @@ export class IssuesService {
     return issue;
   }
 
-  async find(userLogin: IUserLogin): Promise<Issues[]> {
-    return await this.prisma.issues.findMany({
+  async find(
+    userLogin: IUserLogin,
+  ): Promise<Issues[] | (Issues & { assignee: Users })[]> {
+    const issues = await this.prisma.issues.findMany({
       where: {
         creatorId: userLogin.id,
         isDeleted: false,
       },
     });
+    const issuesWithAssignee = await Promise.all(
+      issues.map(async (issue) => {
+        const assignee =
+          issue.assigneeId !== null
+            ? await this.usersService.findOneById(issue.assigneeId)
+            : {};
+        const reporter =
+          issue.reporterId !== null
+            ? await this.usersService.findOneById(issue.reporterId)
+            : {};
+
+        return { ...issue, assignee, reporter };
+      }),
+    );
+    return issuesWithAssignee;
   }
 
   async findAll(userLogin: IUserLogin): Promise<Issues[]> {
