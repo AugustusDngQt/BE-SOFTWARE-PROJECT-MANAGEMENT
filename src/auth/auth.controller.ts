@@ -10,7 +10,9 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: { user: IUserLogin }): Promise<IUserLogin> {
+  async login(
+    @Request() req: { user: IUserLogin },
+  ): Promise<{ user: IUserLogin; accessToken: string; refreshToken: string }> {
     return await this.authService.login(req.user);
   }
 }

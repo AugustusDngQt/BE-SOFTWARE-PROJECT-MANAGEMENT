@@ -6,12 +6,9 @@ import {
   IsDateString,
   IsNotEmpty,
 } from 'class-validator';
-import { ESprintStatus } from 'src/enum/sprint.enum';
+import { ESprintDuration, ESprintStatus } from 'src/enum/sprint.enum';
 
 export class UpdateSprintDto {
-  @IsUUID('4')
-  id: string;
-
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -30,10 +27,10 @@ export class UpdateSprintDto {
   endDate?: string;
 
   @IsOptional()
-  @IsString()
-  assigneeId?: string;
-
-  @IsOptional()
   @IsEnum(ESprintStatus)
   status?: string;
+
+  @IsOptional()
+  @IsEnum(ESprintDuration)
+  duration?: string;
 }

@@ -14,8 +14,6 @@ import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
-import { FindIssuesByInformationDto } from './dto/find-issues-by-information.dto';
-import { ChangePositionIssueDto } from './dto/change-position.dto';
 @Controller('issues')
 export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}
@@ -28,17 +26,15 @@ export class IssuesController {
     return this.issuesService.create(createIssueDto, user);
   }
 
-  @Patch()
+  @Patch(':id')
   async update(
+    @Param('id') id: string,
     @Body() updateIssueDto: UpdateIssueDto,
     @User() user: IUserLogin,
   ) {
-    return this.issuesService.update(updateIssueDto, user);
-  }
-
-  @Post('restore/:id')
-  async restore(@Param('id') id: string) {
-    return this.issuesService.restore(id);
+    return {
+      issue: await this.issuesService.update(id, updateIssueDto, user),
+    };
   }
 
   @Get(':id')
@@ -47,20 +43,12 @@ export class IssuesController {
   }
 
   @Get()
-  async find(@Query() query: FindIssuesByInformationDto) {
-    return this.issuesService.find(query);
+  async find(@User() user: IUserLogin) {
+    return { issues: await this.issuesService.find(user) };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string, @User() user: IUserLogin) {
     return this.issuesService.remove(id, user);
-  }
-
-  @Post('change-position')
-  async changePosition(
-    @Body() body: ChangePositionIssueDto,
-    @User() user: IUserLogin,
-  ) {
-    return this.issuesService.changePosition(body, user);
   }
 }

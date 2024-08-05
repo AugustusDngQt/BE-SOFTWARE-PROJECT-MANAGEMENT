@@ -2,12 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUserResponse } from 'src/interfaces/user/user-response.interface';
-import { PostgresPrismaService } from 'src/prisma.service';
 import { EUserStatus } from 'src/enum/user.enum';
 import * as bcrypt from 'bcrypt';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { UserMessages } from 'src/constants/messages/user.message';
+import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
+import { Users } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -15,30 +16,16 @@ export class UsersService {
   async create(
     createUserDto: CreateUserDto,
     userLogin?: IUserLogin,
-  ): Promise<IUserResponse> {
-    if (
-      (await this.findOneByUniqueField(createUserDto.email)) ||
-      (await this.findOneByUniqueField(createUserDto.phoneNumber))
-    )
+  ): Promise<Users> {
+    if (await this.findOneByUniqueField(createUserDto.email))
       throw new BadRequestException({
-        message: UserMessages.EMAIL_OR_PHONE_NUMBER_ALREADY_EXISTS,
+        message: UserMessages.EMAIL_OR_ALREADY_EXISTS,
       });
-    const createdBy: IExecutor = userLogin
-      ? {
-          id: userLogin.id,
-          email: userLogin.email,
-          name: userLogin.name,
-        }
-      : null;
-    const user: IUserResponse = await this.PostgresPrismaService.users.create({
+    const user: Users = await this.PostgresPrismaService.users.create({
       data: {
         email: createUserDto.email,
         name: createUserDto.name,
-        address: createUserDto.address,
-        phoneNumber: createUserDto.phoneNumber,
         password: await bcrypt.hash(createUserDto.password, 10),
-        status: EUserStatus.UNVERIFIED,
-        createdBy,
       },
     });
     return user;
@@ -51,7 +38,7 @@ export class UsersService {
   async findOneByUniqueField(value: string): Promise<IUserResponse> {
     return await this.PostgresPrismaService.users.findFirst({
       where: {
-        OR: [{ phoneNumber: value }, { email: value }],
+        OR: [{ email: value }],
       },
     });
   }
@@ -59,7 +46,7 @@ export class UsersService {
   async findOneById(id: string): Promise<IUserResponse> {
     const user: IUserResponse =
       await this.PostgresPrismaService.users.findUnique({
-        where: { id, isDeleted: false },
+        where: { id },
       });
     return user;
   }

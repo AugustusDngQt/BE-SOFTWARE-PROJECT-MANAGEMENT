@@ -8,12 +8,7 @@ import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 import { SprintsModule } from 'src/sprints/sprints.module';
 
 @Module({
-  imports: [
-    ConversationsModule,
-    MembersModule,
-    UsersModule,
-    forwardRef(() => SprintsModule),
-  ],
+  imports: [ConversationsModule, MembersModule, UsersModule],
   controllers: [ProjectsController],
   providers: [ProjectsService, PostgresPrismaService],
   exports: [ProjectsService],

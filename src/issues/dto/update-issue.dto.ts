@@ -13,9 +13,6 @@ import {
 import { EIssueType, EIssueStatus, EIssuePriority } from 'src/enum/issue.enum';
 
 export class UpdateIssueDto {
-  @IsUUID('4')
-  id: string;
-
   @IsOptional()
   @IsString()
   name?: string;
@@ -30,16 +27,28 @@ export class UpdateIssueDto {
   status?: string;
 
   @IsOptional()
-  @IsEnum(EIssuePriority)
-  priority?: string;
-
-  @IsOptional()
   @IsUUID('4')
   reporterId?: string;
 
   @IsOptional()
   @IsUUID('4')
   assigneeId?: string;
+
+  @IsOptional()
+  @IsUUID('4')
+  parentId?: string;
+
+  @IsOptional()
+  @IsNumber()
+  printPosition: number;
+
+  @IsOptional()
+  @IsNumber()
+  boardPosition: number;
+
+  @IsOptional()
+  @IsString()
+  sprintColors: string;
 
   @IsOptional()
   @IsUUID('4')
@@ -50,6 +59,5 @@ export class UpdateIssueDto {
   description?: string;
 
   @IsOptional()
-  @IsString()
-  note?: string;
+  isDeleted?: boolean;
 }

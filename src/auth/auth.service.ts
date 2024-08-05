@@ -18,7 +18,6 @@ export class AuthService {
     if (user && (await bcrypt.compare(password, user.password))) {
       return {
         id: user.id,
-        phoneNumber: user.phoneNumber,
         email: user.email,
         name: user.name,
       };
@@ -26,9 +25,11 @@ export class AuthService {
     return null;
   }
 
-  async login(user: IUserLogin): Promise<IUserLogin> {
+  async login(
+    user: IUserLogin,
+  ): Promise<{ user: IUserLogin; accessToken: string; refreshToken: string }> {
     return {
-      ...user,
+      user,
       accessToken: this.createAccessToken(user),
       refreshToken: this.createRefreshToken(user),
     };
@@ -39,7 +40,6 @@ export class AuthService {
       sub: 'Access Token',
       iss: 'From Server',
       id: userLogin.id,
-      phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
     };
@@ -52,7 +52,6 @@ export class AuthService {
       sub: 'Refresh Token',
       iss: 'From Server',
       id: userLogin.id,
-      phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
     };
@@ -68,7 +67,6 @@ export class AuthService {
       sub: 'Verify Token',
       iss: 'From Server',
       id: userLogin.id,
-      phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
     };
@@ -84,7 +82,6 @@ export class AuthService {
       sub: 'Forgot Password Token',
       iss: 'From Server',
       id: userLogin.id,
-      phoneNumber: userLogin.phoneNumber,
       email: userLogin.email,
       name: userLogin.name,
     };

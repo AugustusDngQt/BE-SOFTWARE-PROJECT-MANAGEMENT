@@ -3,164 +3,121 @@ generator client {
   output   = "../../node_modules/@prisma/postgres/client"
 }
 
+generator client_default {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/client"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Users {
-  id                  String     @id @unique @default(uuid()) @db.Uuid
-  email               String     @unique
-  name                String
-  address             String
-  phoneNumber         String     @unique
-  password            String
-  verifiedToken       String?
-  forgotPasswordToken String?
-  refreshToken        String?
-  status              String
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
-  deletedAt           DateTime?
-  createdBy           Json?
-  updatedBy           Json?
-  deletedBy           Json?
-  isDeleted           Boolean    @default(false)
-  Comments            Comments[]
-  Members             Members[]
-  Sprints             Sprints[]
+  id       String  @id @unique @default(uuid()) @db.Uuid
+  name     String
+  email    String
+  password String
+  avatar   String?
 }
 
 model Projects {
-  id          String    @id @unique @default(uuid()) @db.Uuid
-  name        String    @unique
-  description String?
-  category    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
-  createdBy   Json?
-  updatedBy   Json?
-  deletedBy   Json?
-  isDeleted   Boolean   @default(false)
-  Issues      Issues[]
-  Members     Members[]
-  Sprints     Sprints[]
+  id              String    @id @unique @default(uuid()) @db.Uuid
+  key             String    @unique
+  name            String    @unique
+  defaultAssignee String?
+  imageUrl        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  deletedAt       DateTime?
+  members         Members[]
 }
 
 model Issues {
   id             String     @id @unique @default(uuid()) @db.Uuid
-  name           String
   key            String     @unique
-  type           String
-  status         String     @default("To do")
-  priority       String
-  sprintPosition Int?
-  boardPosition  Int?
-  reporterId     String?    @db.Uuid
-  assigneeId     String?    @db.Uuid
-  issueParrentId String?    @db.Uuid
+  name           String
+  description    String?    @db.Text()
+  status         String     @default("TODO")
+  type           String     @default("TASK")
+  sprintPosition Float
+  boardPosition  Float      @default(-1)
+  reporterId     String     @default("1")
+  assigneeId     String?
+  parentId       String?
   sprintId       String?    @db.Uuid
-  projectId      String?    @db.Uuid
-  note           String?
-  description    String?
-  startDate      DateTime?
-  endDate        DateTime
+  isDeleted      Boolean    @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   deletedAt      DateTime?
-  createdBy      Json?
-  updatedBy      Json?
-  deletedBy      Json?
-  isDeleted      Boolean    @default(false)
-  Comments       Comments[]
-  Project        Projects?  @relation(fields: [projectId], references: [id])
+  sprintColor    String?
+  creatorId      String
+  comments       Comments[]
   Sprint         Sprints?   @relation(fields: [sprintId], references: [id])
 }
 
 model Sprints {
   id          String    @id @unique @default(uuid()) @db.Uuid
   name        String
-  description String?
+  description String?   @db.Text()
+  duration    String?
   startDate   DateTime?
-  endDate     DateTime
-  status      String    @default("Pending")
-  projectId   String    @db.Uuid
-  assigneeId  String?   @db.Uuid
+  endDate     DateTime?
+  creatorId   String
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  updatedAt   DateTime? @updatedAt
   deletedAt   DateTime?
-  createdBy   Json?
-  updatedBy   Json?
-  deletedBy   Json?
-  isDeleted   Boolean   @default(false)
-  Issues      Issues[]
-  Assignee    Users?    @relation(fields: [assigneeId], references: [id])
-  Project     Projects  @relation(fields: [projectId], references: [id])
+  status      String    @default("PENDING")
+  issues      Issues[]
 }
 
 model Members {
-  id        String    @id @unique @default(uuid()) @db.Uuid
-  userId    String    @db.Uuid
-  projectId String    @db.Uuid
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-  roleId    String?   @db.Uuid
-  Role      Roles?    @relation(fields: [roleId], references: [id])
-  status    String    @default("Pending")
-  createdBy Json?
-  updatedBy Json?
-  deletedBy Json?
-  Project   Projects  @relation(fields: [projectId], references: [id])
-  User      Users     @relation(fields: [userId], references: [id])
+  id        String   @id @unique @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  project   Projects @relation(fields: [projectId], references: [id])
 }
 
-model Roles {
-  id            String    @id @unique @default(uuid()) @db.Uuid
-  name          String
-  description   String?
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-  createdBy     Json?
-  updatedBy     Json?
-  deletedBy     Json?
-  isDeleted     Boolean   @default(false)
-  Members       Members[]
-  permissionIds String[]
-}
+// model Roles {
+//   id            String    @id @unique @default(uuid()) @db.Uuid
+//   name          String
+//   description   String?
+//   isActive      Boolean   @default(true)
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
+//   deletedAt     DateTime?
+//   createdBy     Json?
+//   updatedBy     Json?
+//   deletedBy     Json?
+//   isDeleted     Boolean   @default(false)
+//   Members       Members[]
+//   permissionIds String[]
+// }
 
-model Permissions {
-  id          String    @id @unique @default(uuid()) @db.Uuid
-  name        String
-  path        String
-  module      String // EPermissionModules
-  method      String // EPermissionMethods
-  description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
-  createdBy   Json?
-  updatedBy   Json?
-  deletedBy   Json?
-  isDeleted   Boolean   @default(false)
-}
+// model Permissions {
+//   id          String    @id @unique @default(uuid()) @db.Uuid
+//   name        String
+//   path        String
+//   module      String // EPermissionModules
+//   method      String // EPermissionMethods
+//   description String?
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+//   deletedAt   DateTime?
+//   createdBy   Json?
+//   updatedBy   Json?
+//   deletedBy   Json?
+//   isDeleted   Boolean   @default(false)
+// }
 
 model Comments {
   id        String    @id @unique @default(uuid()) @db.Uuid
-  content   String
-  issueId   String    @db.Uuid
-  userId    String    @db.Uuid
+  content   String    @db.Text()
+  authorId  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-  isDeleted Boolean   @default(false)
-  createdBy Json?
-  updatedBy Json?
-  deletedBy Json?
-  Issue     Issues    @relation(fields: [issueId], references: [id])
-  User      Users     @relation(fields: [userId], references: [id])
+  isEdited  Boolean   @default(false)
+  issueId   String    @db.Uuid
+  logId     String?
+  Issue     Issues?   @relation(fields: [issueId], references: [id])
 }

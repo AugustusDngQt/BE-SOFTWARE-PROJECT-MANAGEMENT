@@ -1,7 +1,7 @@
 export enum EIssueStatus {
-  TO_DO = 'To do',
-  IN_PROGRESS = 'In Progress',
-  DONE = 'Done',
+  TODO = 'TODO',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
 }
 export enum EIssuePriority {
   HIGHEST = '5',
@@ -12,9 +12,9 @@ export enum EIssuePriority {
 }
 
 export enum EIssueType {
-  STORY = 'Story',
-  TASK = 'Task',
-  BUG = 'Bug',
-  EPIC = 'Epic',
-  SUBTASK = 'Sub-task',
+  BUG = 'BUG',
+  TASK = 'TASK',
+  SUBTASK = 'SUBTASK',
+  STORY = 'STORY',
+  EPIC = 'EPIC',
 }

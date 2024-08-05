@@ -14,129 +14,111 @@ export class MembersService {
   async create(
     createMemberDto: CreateMemberDto,
     userLogin: IUserLogin,
-  ): Promise<IMemberResponse> {
-    const createdBy: IExecutor = {
-      id: userLogin.id,
-      name: userLogin.name,
-      email: userLogin.email,
-    };
-
-    const createdMember = await this.PostgresPrismaService.members.create({
+  ): Promise<Members> {
+    return await this.PostgresPrismaService.members.create({
       data: {
-        User: { connect: { id: createMemberDto.userId } },
-        Project: { connect: { id: createMemberDto.projectId } },
-        Role: { connect: { id: createMemberDto.roleId } },
-        createdBy,
+        project: { connect: { id: createMemberDto.projectId } },
       },
-      include: { User: true, Project: true },
     });
+  }
 
-    const member: IMemberResponse = {
-      id: createdMember.id,
-      userName: createdMember.User.name,
-    };
+  async findOneById(id: string): Promise<Members> {
+    const member = await this.PostgresPrismaService.members.findUnique({
+      where: { id },
+    });
     return member;
   }
 
-  findAll() {
-    return `This action returns all members`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} member`;
-  }
-
-  async findOneById(id: string): Promise<IMemberResponse> {
-    const member = await this.PostgresPrismaService.members.findUnique({
-      where: { id, isDeleted: false },
-      include: { User: true },
-    });
-    return { id: member.id, userName: member.User.name };
-  }
-
-  async findAllByProjectId(projectId: string): Promise<IMemberResponse[]> {
+  async findAllByProjectId(projectId: string) {
     const foundMembers = await this.PostgresPrismaService.members.findMany({
-      where: { projectId, isDeleted: false },
-      include: { User: true },
+      where: { projectId },
     });
 
-    const members: IMemberResponse[] = foundMembers.map((member) => {
-      return {
-        id: member.id,
-        userName: member.User.name,
-      };
+    const users = await this.PostgresPrismaService.users.findMany({
+      where: {
+        id: {
+          in: foundMembers.map((member) => member.id),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+      },
     });
-    return members;
+
+    return users;
   }
 
-  async update(
-    updateMemberDto: UpdateMemberDto,
-    userLogin: IUserLogin,
-  ): Promise<Members> {
-    const { id, status } = updateMemberDto;
+  // async update(
+  //   updateMemberDto: UpdateMemberDto,
+  //   userLogin: IUserLogin,
+  // ): Promise<Members> {
+  //   const { id, status } = updateMemberDto;
 
-    const updatedBy: IExecutor = {
-      id: userLogin.id,
-      name: userLogin.name,
-      email: userLogin.email,
-    };
-    if (!(await this.findOneById(id)))
-      throw new BadRequestException(
-        MEMBER_MESSAGES.MEMBER_NOT_FOUND_OR_DELETED,
-      );
-    return await this.PostgresPrismaService.members.update({
-      where: { id, isDeleted: false },
-      data: { status, updatedBy },
-    });
-  }
+  //   const updatedBy: IExecutor = {
+  //     id: userLogin.id,
+  //     name: userLogin.name,
+  //     email: userLogin.email,
+  //   };
+  //   if (!(await this.findOneById(id)))
+  //     throw new BadRequestException(
+  //       MEMBER_MESSAGES.MEMBER_NOT_FOUND_OR_DELETED,
+  //     );
+  //   return await this.PostgresPrismaService.members.update({
+  //     where: { id, isDeleted: false },
+  //     data: { status, updatedBy },
+  //   });
+  // }
 
-  async remove(id: string, userLogin: IUserLogin): Promise<IMemberResponse> {
-    const deletedBy: IExecutor = {
-      id: userLogin.id,
-      name: userLogin.name,
-      email: userLogin.email,
-    };
-    const deletedMember = await this.PostgresPrismaService.members.update({
-      where: { id },
-      data: { isDeleted: true, deletedAt: new Date(), deletedBy },
-      include: { User: true },
-    });
+  // async remove(id: string, userLogin: IUserLogin): Promise<IMemberResponse> {
+  //   const deletedBy: IExecutor = {
+  //     id: userLogin.id,
+  //     name: userLogin.name,
+  //     email: userLogin.email,
+  //   };
+  //   const deletedMember = await this.PostgresPrismaService.members.update({
+  //     where: { id },
+  //     data: { isDeleted: true, deletedAt: new Date(), deletedBy },
+  //     include: { User: true },
+  //   });
 
-    return { id: deletedMember.id, userName: deletedMember.User.name };
-  }
+  //   return { id: deletedMember.id, userName: deletedMember.User.name };
+  // }
 
-  async findOneByInformation(
-    userId: string,
-    projectId: string,
-  ): Promise<IMemberResponse> {
-    const find = await this.PostgresPrismaService.members.findFirst({
-      where: { userId: userId, projectId: projectId, isDeleted: false },
-      include: { User: true },
-    });
-    return find ? { id: find.id, userName: find.User.name } : null;
-  }
+  // async findOneByInformation(
+  //   userId: string,
+  //   projectId: string,
+  // ): Promise<IMemberResponse> {
+  //   const find = await this.PostgresPrismaService.members.findFirst({
+  //     where: { userId: userId, projectId: projectId, isDeleted: false },
+  //     include: { User: true },
+  //   });
+  //   return find ? { id: find.id, userName: find.User.name } : null;
+  // }
 
-  async restoreById(
-    id: string,
-    userLogin: IUserLogin,
-  ): Promise<IMemberResponse> {
-    const member = await this.PostgresPrismaService.members.findUnique({
-      where: { id, isDeleted: true },
-    });
-    if (!member)
-      throw new BadRequestException(
-        MEMBER_MESSAGES.MEMBER_NOT_FOUND_OR_ALREADY_ACTIVE,
-      );
-    const updatedBy: IExecutor = {
-      id: userLogin.id,
-      name: userLogin.name,
-      email: userLogin.email,
-    };
-    const restoredMember = await this.PostgresPrismaService.members.update({
-      where: { id: id },
-      data: { isDeleted: false, deletedAt: null, deletedBy: null, updatedBy },
-      include: { User: true },
-    });
-    return { id: restoredMember.id, userName: restoredMember.User.name };
-  }
+  // async restoreById(
+  //   id: string,
+  //   userLogin: IUserLogin,
+  // ): Promise<IMemberResponse> {
+  //   const member = await this.PostgresPrismaService.members.findUnique({
+  //     where: { id, isDeleted: true },
+  //   });
+  //   if (!member)
+  //     throw new BadRequestException(
+  //       MEMBER_MESSAGES.MEMBER_NOT_FOUND_OR_ALREADY_ACTIVE,
+  //     );
+  //   const updatedBy: IExecutor = {
+  //     id: userLogin.id,
+  //     name: userLogin.name,
+  //     email: userLogin.email,
+  //   };
+  //   const restoredMember = await this.PostgresPrismaService.members.update({
+  //     where: { id: id },
+  //     data: { isDeleted: false, deletedAt: null, deletedBy: null, updatedBy },
+  //     include: { User: true },
+  //   });
+  //   return { id: restoredMember.id, userName: restoredMember.User.name };
+  // }
 }

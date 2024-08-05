@@ -19,60 +19,48 @@ import { Members } from '@prisma/client';
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
-  @Post()
-  async create(
-    @Body() createMemberDto: CreateMemberDto,
-    @User() userLogin: IUserLogin,
-  ): Promise<IMemberResponse> {
-    return await this.membersService.create(createMemberDto, userLogin);
+  // @Post()
+  // async create(
+  //   @Body() createMemberDto: CreateMemberDto,
+  //   @User() userLogin: IUserLogin,
+  // ) {
+  //   return await this.membersService.create(createMemberDto, userLogin);
+  // }
+
+  @Get(':projectId')
+  async findAllByProjectId(@Param('projectId') projectId: string) {
+    return { members: await this.membersService.findAllByProjectId(projectId) };
   }
 
-  @Get()
-  async findAll(): Promise<string> {
-    return this.membersService.findAll();
-  }
+  // @Patch()
+  // async update(
+  //   @Body() updateMemberDto: UpdateMemberDto,
+  //   @User() user: IUserLogin,
+  // ): Promise<Members> {
+  //   return await this.membersService.update(updateMemberDto, user);
+  // }
 
-  @Get('find-by-id/:id')
-  async findOneById(@Param('id') id: string): Promise<IMemberResponse> {
-    return this.membersService.findOneById(id);
-  }
+  // @Delete(':id')
+  // async remove(
+  //   @Param('id') id: string,
+  //   @User() userLogin: IUserLogin,
+  // ): Promise<IMemberResponse> {
+  //   return this.membersService.remove(id, userLogin);
+  // }
 
-  @Get('project/:projectId')
-  async findAllByProjectId(
-    @Param('projectId') projectId: string,
-  ): Promise<IMemberResponse[]> {
-    return this.membersService.findAllByProjectId(projectId);
-  }
+  // @Get('find')
+  // async findOneByInformation(
+  //   @Param('userId') userId: string,
+  //   @Param('projectId') projectId: string,
+  // ): Promise<IMemberResponse> {
+  //   return this.membersService.findOneByInformation(userId, projectId);
+  // }
 
-  @Patch()
-  async update(
-    @Body() updateMemberDto: UpdateMemberDto,
-    @User() user: IUserLogin,
-  ): Promise<Members> {
-    return await this.membersService.update(updateMemberDto, user);
-  }
-
-  @Delete(':id')
-  async remove(
-    @Param('id') id: string,
-    @User() userLogin: IUserLogin,
-  ): Promise<IMemberResponse> {
-    return this.membersService.remove(id, userLogin);
-  }
-
-  @Get('find')
-  async findOneByInformation(
-    @Param('userId') userId: string,
-    @Param('projectId') projectId: string,
-  ): Promise<IMemberResponse> {
-    return this.membersService.findOneByInformation(userId, projectId);
-  }
-
-  @Post('restore/:id')
-  async restoreById(
-    @Param('id') id: string,
-    @User() userLogin: IUserLogin,
-  ): Promise<IMemberResponse> {
-    return this.membersService.restoreById(id, userLogin);
-  }
+  // @Post('restore/:id')
+  // async restoreById(
+  //   @Param('id') id: string,
+  //   @User() userLogin: IUserLogin,
+  // ): Promise<IMemberResponse> {
+  //   return this.membersService.restoreById(id, userLogin);
+  // }
 }
