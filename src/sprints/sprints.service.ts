@@ -13,10 +13,16 @@ import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { ESprintStatus } from 'src/enum/sprint.enum';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 import { Sprints } from '@prisma/client';
+import { CreateSprintDto } from './dto/create-sprint.dto';
+import { ProjectsService } from 'src/projects/projects.service';
 
 @Injectable()
 export class SprintsService {
-  constructor(private PostgresPrismaService: PostgresPrismaService) {}
+  constructor(
+    private PostgresPrismaService: PostgresPrismaService,
+    @Inject(forwardRef(() => ProjectsService))
+    private projectsService: ProjectsService,
+  ) {}
 
   async create(userLogin: IUserLogin): Promise<Sprints> {
     const count = await this.PostgresPrismaService.sprints.count({
@@ -66,7 +72,6 @@ export class SprintsService {
   async find(userLogin: IUserLogin): Promise<Sprints[]> {
     return await this.PostgresPrismaService.sprints.findMany({
       where: {
-        creatorId: userLogin.id,
         OR: [
           { status: ESprintStatus.ACTIVE },
           { status: ESprintStatus.PENDING },

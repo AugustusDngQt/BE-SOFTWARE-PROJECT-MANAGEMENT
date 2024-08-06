@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ErrorsInterceptor } from './interceptors/error-handling.interceptor';
 import { AuthModule } from './auth/auth.module';
 import { MessagesModule } from './messages/messages.module';
 import { ConversationsModule } from './conversations/conversations.module';
@@ -16,6 +14,8 @@ import { IssuesModule } from './issues/issues.module';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { CommentsModule } from './comments/comments.module';
+import { ChatGateway } from './chat.gateway';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -32,8 +32,9 @@ import { CommentsModule } from './comments/comments.module';
     RolesModule,
     PermissionsModule,
     CommentsModule,
+    MessagesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway, JwtService],
 })
 export class AppModule {}

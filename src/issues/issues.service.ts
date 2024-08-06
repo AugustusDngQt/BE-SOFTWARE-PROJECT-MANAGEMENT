@@ -61,7 +61,9 @@ export class IssuesService {
         ...payload,
         reporterId: userLogin.id,
         Sprint: sprintId ? { connect: { id: sprintId } } : undefined,
-        key: `Issue-${issues.length + 1}`,
+        key: sprintId
+          ? `Issue-${issues.length + 1} (${sprint.name})`
+          : `Issue-${issues.length + 1}`,
         creatorId: userLogin.id,
         sprintPosition: this.calculateInsertPosition(sprintIssues),
         boardPosition,
@@ -115,7 +117,6 @@ export class IssuesService {
   ): Promise<Issues[] | (Issues & { assignee: Users })[]> {
     const issues = await this.prisma.issues.findMany({
       where: {
-        creatorId: userLogin.id,
         isDeleted: false,
       },
     });

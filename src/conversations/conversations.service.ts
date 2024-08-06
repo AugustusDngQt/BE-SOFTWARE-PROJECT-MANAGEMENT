@@ -57,8 +57,10 @@ export class ConversationsService {
     return `This action returns all conversations`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} conversation`;
+  async findOneById(id: string) {
+    return await this.mongoPrismaService.conversations.findUnique({
+      where: { id },
+    });
   }
 
   async findOneByProjectId(projectId: string): Promise<IConversationResponse> {

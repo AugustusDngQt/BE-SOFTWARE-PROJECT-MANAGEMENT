@@ -6,4 +6,7 @@ import {
   IsUUID,
 } from 'class-validator';
 
-export class CreateSprintDto {}
+export class CreateSprintDto {
+  @IsUUID('4')
+  projectId: string;
+}

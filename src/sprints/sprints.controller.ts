@@ -14,6 +14,7 @@ import { User } from 'src/decorators/user.decorator';
 import { RolesRepository } from 'src/roles/roles.repository';
 import { Sprints } from '@prisma/client';
 import { Public } from 'src/decorators/is-public.decorator';
+import { CreateSprintDto } from './dto/create-sprint.dto';
 
 @Controller('sprints')
 export class SprintsController {

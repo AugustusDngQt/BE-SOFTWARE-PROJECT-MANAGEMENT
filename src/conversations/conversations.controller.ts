@@ -12,6 +12,7 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
+import { IConversationResponse } from 'src/interfaces/conversation/conversation-response.interface';
 
 @Controller('conversations')
 export class ConversationsController {
@@ -30,9 +31,14 @@ export class ConversationsController {
     return this.conversationsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.conversationsService.findOne(+id);
+  @Get('find-by-project-id/:id')
+  async findOne(
+    @Param('id') projectId: string,
+  ): Promise<{ conversation: any }> {
+    return {
+      conversation:
+        await this.conversationsService.findOneByProjectId(projectId),
+    };
   }
 
   @Patch(':id')

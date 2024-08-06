@@ -22,4 +22,7 @@ export class CreateIssueDto {
   @IsOptional()
   @IsUUID('4')
   sprintId?: string;
+
+  // @IsUUID('4')
+  // projectId: string;
 }

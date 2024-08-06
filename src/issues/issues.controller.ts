@@ -23,7 +23,7 @@ export class IssuesController {
     @Body() createIssueDto: CreateIssueDto,
     @User() user: IUserLogin,
   ) {
-    return this.issuesService.create(createIssueDto, user);
+    return await this.issuesService.create(createIssueDto, user);
   }
 
   @Patch(':id')
@@ -37,7 +37,7 @@ export class IssuesController {
     };
   }
 
-  @Get(':id')
+  @Get('find-by-id/:id')
   async findById(@Param('id') id: string) {
     return this.issuesService.findById(id);
   }

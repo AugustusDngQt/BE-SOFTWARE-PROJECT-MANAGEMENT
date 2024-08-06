@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { MongoPrismaService } from 'src/database/mongo-prisma.service';
 
 @Injectable()
 export class MessagesService {
-  constructor() {}
-  create(createMessageDto: CreateMessageDto) {
-    return 'This action adds a new message';
+  constructor(private prisma: MongoPrismaService) {}
+  async create(createMessageDto: CreateMessageDto) {
+    return await this.prisma.messages.create({ data: createMessageDto });
   }
 
   findAll() {
@@ -23,5 +24,15 @@ export class MessagesService {
 
   remove(id: number) {
     return `This action removes a #${id} message`;
+  }
+
+  async findByConversationId(projectId: string) {
+    const conversation = await this.prisma.conversations.findUnique({
+      where: { projectId },
+    });
+    if (!conversation) throw new BadRequestException('Conversation not found');
+    return this.prisma.messages.findMany({
+      where: { conversationId: conversation.id },
+    });
   }
 }
