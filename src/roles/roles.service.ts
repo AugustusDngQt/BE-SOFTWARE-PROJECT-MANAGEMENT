@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-// import { type Roles } from '@prisma/client';
+// import { type Roles } from '@prisma/postgres/client';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';

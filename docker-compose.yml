@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres
+    container_name: postgress-database
+    volumes:
+      - ./databases:/var/lib/posgresql/data
+    environment:
+      POSTGRES_PASSWORD: admin001
+      POSTGRES_USER: admin
+    ports:
+      - '5432:5432'
+
+volumes:
+  postgres-data:

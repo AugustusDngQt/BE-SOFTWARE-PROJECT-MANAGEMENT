@@ -3,11 +3,6 @@ generator client {
   output   = "../../node_modules/@prisma/mongo/client"
 }
 
-generator client_default {
-  provider = "prisma-client-js"
-  output   = "../../node_modules/@prisma/client"
-}
-
 datasource db {
   provider = "mongodb"
   url      = env("MONGODB_URL")

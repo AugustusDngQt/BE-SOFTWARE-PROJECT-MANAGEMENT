@@ -1,4 +1,4 @@
-import type { Sprints, Users } from '@prisma/client';
+import type { Sprints, Users } from '@prisma/postgres/client';
 
 export interface ISprintResponse {
   id: string;

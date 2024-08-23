@@ -12,7 +12,7 @@ import { SPRINT_MESSAGES } from 'src/constants/messages/sprint.message'; // Impo
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { ESprintStatus } from 'src/enum/sprint.enum';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
-import { Sprints } from '@prisma/client';
+import { Sprints } from '@prisma/postgres/client';
 import { CreateSprintDto } from './dto/create-sprint.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 

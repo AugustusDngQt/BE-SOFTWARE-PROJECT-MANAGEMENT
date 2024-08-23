@@ -5,7 +5,7 @@ import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IMemberResponse } from 'src/interfaces/member/member.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { MEMBER_MESSAGES } from 'src/constants/messages/member.message';
-import { type Members } from '@prisma/client';
+import { type Members } from '@prisma/postgres/client';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 
 @Injectable()

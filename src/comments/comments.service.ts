@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { Comments, Users } from '@prisma/client';
+import { Comments, Users } from '@prisma/postgres/client';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { UsersService } from 'src/users/users.service';

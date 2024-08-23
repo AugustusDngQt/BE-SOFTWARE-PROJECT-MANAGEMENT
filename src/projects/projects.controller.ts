@@ -12,7 +12,7 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
-import { Members, Projects } from '@prisma/client';
+import { Members, Projects } from '@prisma/postgres/client';
 
 @Controller('projects')
 export class ProjectsController {

@@ -9,6 +9,7 @@ import { MongoPrismaService } from 'src/database/mongo-prisma.service';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { IConversationResponse } from 'src/interfaces/conversation/conversation-response.interface';
 import { Prisma } from '@prisma/client';
+import { JsonArray } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ConversationsService {
@@ -36,7 +37,7 @@ export class ConversationsService {
     const conversation = await this.mongoPrismaService.conversations.create({
       data: {
         title: createConversationDto.title,
-        participants: participants as unknown as Prisma.JsonArray,
+        participants: participants as unknown as JsonArray,
         createdBy: createdBy,
         projectId: createConversationDto.projectId
           ? createConversationDto.projectId
@@ -97,7 +98,7 @@ export class ConversationsService {
       await this.mongoPrismaService.conversations.update({
         where: { projectId },
         data: {
-          participants: participants as unknown as Prisma.JsonArray,
+          participants: participants as unknown as JsonArray,
           updatedBy,
         },
       });

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
-// import { type Permissions } from '@prisma/client';
+// import { type Permissions } from '@prisma/postgres/client';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 import { PERMISSION_MESSAGES } from 'src/constants/messages/permission.message';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';

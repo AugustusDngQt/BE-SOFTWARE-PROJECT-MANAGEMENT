@@ -8,7 +8,7 @@ import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IExecutor } from 'src/interfaces/executor.interface';
 import { UserMessages } from 'src/constants/messages/user.message';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
-import { Users } from '@prisma/client';
+import { Users } from '@prisma/postgres/client';
 
 @Injectable()
 export class UsersService {

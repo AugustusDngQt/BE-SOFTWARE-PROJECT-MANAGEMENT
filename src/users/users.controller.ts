@@ -14,7 +14,7 @@ import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { User } from 'src/decorators/user.decorator';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { Public } from 'src/decorators/is-public.decorator';
-import { Users } from '@prisma/client';
+import { Users } from '@prisma/postgres/client';
 
 @Controller('users')
 export class UsersController {

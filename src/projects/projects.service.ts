@@ -7,7 +7,7 @@ import { MembersService } from 'src/members/members.service';
 import { UsersService } from 'src/users/users.service';
 import { IConversationResponse } from 'src/interfaces/conversation/conversation-response.interface';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
-import { type Members, type Projects } from '@prisma/client';
+import { type Members, type Projects } from '@prisma/postgres/client';
 
 @Injectable()
 export class ProjectsService {

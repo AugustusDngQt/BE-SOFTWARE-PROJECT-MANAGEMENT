@@ -1,4 +1,4 @@
-import { Issues } from '@prisma/client';
+import { Issues } from '@prisma/postgres/client';
 
 export type GetIssuesResponse = {
   issues: Issues[];

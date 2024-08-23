@@ -12,7 +12,7 @@ import { SprintsService } from './sprints.service';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { User } from 'src/decorators/user.decorator';
 import { RolesRepository } from 'src/roles/roles.repository';
-import { Sprints } from '@prisma/client';
+import { Sprints } from '@prisma/postgres/client';
 import { Public } from 'src/decorators/is-public.decorator';
 import { CreateSprintDto } from './dto/create-sprint.dto';
 

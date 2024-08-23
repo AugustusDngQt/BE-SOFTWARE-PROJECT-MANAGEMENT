@@ -12,7 +12,7 @@ import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { User } from 'src/decorators/user.decorator';
-// import { type Permissions } from '@prisma/client';
+// import { type Permissions } from '@prisma/postgres/client';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { FindPermissionsByMethodModuleDto } from './dto/find-by-method-&-module.dto';
 

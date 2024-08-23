@@ -15,7 +15,7 @@ import { ProjectsService } from 'src/projects/projects.service';
 import { ISSUES_MESSAGES } from 'src/constants/messages/issue.message';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 import { ESprintStatus } from 'src/enum/sprint.enum';
-import { Issues, Users } from '@prisma/client';
+import { Issues, Users } from '@prisma/postgres/client';
 import { EIssueStatus } from 'src/enum/issue.enum';
 import { UsersService } from 'src/users/users.service';
 import { IssueType } from 'src/type/issue.type';

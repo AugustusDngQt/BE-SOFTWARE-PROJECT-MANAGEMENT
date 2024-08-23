@@ -13,7 +13,7 @@ import { UpdateMemberDto } from './dto/update-member.dto';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
 import { IMemberResponse } from 'src/interfaces/member/member.interface';
 import { User } from 'src/decorators/user.decorator';
-import { Members } from '@prisma/client';
+import { Members } from '@prisma/postgres/client';
 
 @Controller('members')
 export class MembersController {
