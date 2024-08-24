@@ -43,8 +43,8 @@ export class UsersController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    // return this.usersService.findOneById(id);
-    return await this.usersService.findOneByUniqueField(id);
+    return this.usersService.findOneById(id);
+    // return await this.usersService.findOneByUniqueField(id);
   }
 
   @Patch(':id')

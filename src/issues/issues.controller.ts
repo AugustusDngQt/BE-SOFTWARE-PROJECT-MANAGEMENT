@@ -32,6 +32,7 @@ export class IssuesController {
     @Body() updateIssueDto: UpdateIssueDto,
     @User() user: IUserLogin,
   ) {
+    // return { id, updateIssueDto, user };
     return {
       issue: await this.issuesService.update(id, updateIssueDto, user),
     };

@@ -5,21 +5,24 @@ export const defaultUsers = [
     id: '6bdee06d-dfd5-40b3-a3f9-519f24a610e7',
     name: 'Trần Nguyễn Duy Khánh',
     email: 'duykhanhtran17062003@gmail.com',
-    avatar: null,
+    avatar:
+      'https://www.pngall.com/wp-content/uploads/12/Avatar-Profile-Vector-PNG-Cutout.png',
     password: '$2a$12$3VncVoMACaQFqCA1qBlMEeITmXx276ZPYkydtbQhZTwZCWC.Cu3KC',
   },
   {
     id: '8ac42d37-9161-42d3-8973-5dd153a4ad88',
     name: 'Duy Khánh DTUers',
     email: 'trannduykhanh@dtu.edu.vn',
-    avatar: null,
+    avatar:
+      'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes-thumbnail.png',
     password: '$2a$12$vVor/4NNM9D4.JYIyYIkJu386T6Wv6hNX7kC7ecOGtOuhHTD.IG3a',
   },
   {
     id: '5cc9f5c5-3ccd-4620-8f33-272186db91d2',
     name: 'Tran Nguyen Duy Khanh',
     email: 'tnduykhanhdng@gmail.com',
-    avatar: null,
+    avatar:
+      'https://www.pngkey.com/png/full/72-729716_user-avatar-png-graphic-free-download-icon.png',
     password: '$2a$12$PhV93jF.Vj.twb.yYjMU4eibgvAeaw9x5z12sImGJo2aqdKBr6B1a',
   },
 ];

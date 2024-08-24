@@ -5,7 +5,6 @@ import { IUserResponse } from 'src/interfaces/user/user-response.interface';
 import { EUserStatus } from 'src/enum/user.enum';
 import * as bcrypt from 'bcrypt';
 import { IUserLogin } from 'src/interfaces/user/user-login.interface';
-import { IExecutor } from 'src/interfaces/executor.interface';
 import { UserMessages } from 'src/constants/messages/user.message';
 import { PostgresPrismaService } from 'src/database/postgres-prisma.service';
 import { Users } from '@prisma/postgres/client';
@@ -44,9 +43,10 @@ export class UsersService {
   }
 
   async findOneById(id: string): Promise<Users> {
-    return await this.PostgresPrismaService.users.findUnique({
+    const user = await this.PostgresPrismaService.users.findUnique({
       where: { id },
     });
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

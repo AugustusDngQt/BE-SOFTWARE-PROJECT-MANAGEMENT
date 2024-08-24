@@ -121,15 +121,16 @@ export class IssuesService {
       },
     });
     const issuesWithAssignee = await Promise.all(
-      issues.map(async (issue) => {
-        const assignee =
+      issues.map(async (issue: any) => {
+        const assignee = (issue.assignee =
           issue.assigneeId !== null
             ? await this.usersService.findOneById(issue.assigneeId)
-            : {};
-        const reporter =
+            : {});
+        const reporter = (issue.reporter =
           issue.reporterId !== null
             ? await this.usersService.findOneById(issue.reporterId)
-            : {};
+            : {});
+        // console.log(assignee, reporter);
 
         return { ...issue, assignee, reporter };
       }),
